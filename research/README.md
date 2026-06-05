@@ -38,12 +38,14 @@ pytest                                 # research/tests 秒级跑通；torch 模
 
 | 子目录 | 用途 |
 | --- | --- |
-| `configs/` | 实验配置（可配置、可复现、可回滚的 YAML 配置） |
+| `configs/` | 实验配置（`experiments/` 一实验一 YAML；`sweep/` 诊断 sweep 网格） |
 | `data_gen/` | 数据生成器（Dyck/括号匹配、严格格式、工具调用） |
 | `validators/` | 验证器 / verifier（对生成结果做精确结构一致性校验） |
-| `eval/` | 评测 harness（聚合指标、归因分析） |
-| `scripts/` | 运行脚本（**仅服务器侧 GPU 执行**：取权重、采样、评测） |
-| `results/` | 结果归档（指标、对比表；大文件不入库） |
+| `instrument/` | 配置层 + 采样循环插桩 harness（环节四，默认关闭、零开销） |
+| `experiment/` | 实验层：一实验=一配置（`ExperimentConfig`）+ 按 run_id 归档（`ResultsArchive`） |
+| `eval/` | 评测 harness（聚合指标 + 绘图、归因分析） |
+| `scripts/` | 运行脚本（数据物化纯 CPU；采样/评测/同步**仅服务器侧 GPU**执行） |
+| `results/` | 结果归档（按 `run_id`：manifest + 产物；大文件不入库） |
 | `docs/` | 研究文档，含源码改动地图 `change_map.md` |
 
 ## 复现性原则

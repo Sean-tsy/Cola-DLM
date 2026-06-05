@@ -1,0 +1,18 @@
+# 工具调用一致性诊断（L2）。tool_call 任务无 data 旋钮（内置函数库）。
+run_id: tool_call_blk4
+task: tool_call
+n_samples: 256
+seeds: [1234, 2025, 7]
+
+sampling:
+  block_size: 4
+  timestep_num: 16
+  guidance_scale: 7.0
+  max_new_tokens: 96
+  temperature: 0.0
+  trace: true
+
+checkpoint:
+  dit: ${DIT_PATH}
+  vae: ${VAE_PATH}
+  tokenizer: ${TOKENIZER_PATH}

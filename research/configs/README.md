@@ -12,6 +12,19 @@
 
 > 本环节仅建立骨架；具体配置文件在后续「数据生成 / 评测」环节加入。
 
+## experiments/ —— 环节五实验配置（一实验 = 一配置 = 一 commit）
+
+`experiments/` 下每个 YAML **唯一描述**一个实验（`run_id` / 任务 / L·D·k 等数据旋钮 /
+块长 / 采样步数 / checkpoint 占位符 / 随机种子集合），由 `research.experiment`
+（`load_experiment`）消费，产物按 `run_id` 归档到 `research/results/`。示例：
+
+- `dyck_L32_D6_k2_blk4.yaml` —— Dyck-k 括号匹配（L0）。
+- `json_strict_blk4.yaml` —— 严格 JSON 格式（L1）。
+- `tool_call_blk4.yaml` —— 工具调用（L2）。
+
+`run_id` 须等于文件名 stem；`checkpoint` 用 `${VAR}` 占位、服务器侧注入。
+详见 [`../experiment/README.md`](../experiment/README.md)。
+
 ## sweep/ —— 环节四诊断 sweep 配置
 
 `sweep/` 下三份网格配置，配合 `research/instrument`（`load_sweep_grid`）使用，

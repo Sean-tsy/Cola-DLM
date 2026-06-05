@@ -103,6 +103,14 @@ generate_task_data/*.jsonl
 
 # Local experiment scratch
 outputs/
+
+# Experiment results archive (research/results/<run_id>/): keep small structured
+# results (manifest.json, metrics/, plots/) but never the large per-run
+# artifacts (generated data, model samples, diagnostics traces, job logs).
+research/results/*/data/
+research/results/*/samples/
+research/results/*/traces/
+research/results/*/logs/
 logs/
 wandb/
 

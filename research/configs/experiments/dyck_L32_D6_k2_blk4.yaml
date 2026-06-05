@@ -1,0 +1,28 @@
+# 实验 = 一份配置 + 一个 git commit。
+# Dyck-k 括号匹配诊断（L0）。本文件唯一描述该实验：任务、L/D/k、块长、采样步数、
+# checkpoint（占位符，服务器侧注入）、随机种子集合、run_id。
+run_id: dyck_L32_D6_k2_blk4
+task: dyck
+n_samples: 256
+seeds: [1234, 2025, 7]
+
+data:
+  length: 32            # L
+  max_depth: 6          # D
+  k: 2                  # 括号类型数
+  max_pairing_distance: null
+  mode: completion      # 条件补全探针（给未闭合前缀）
+
+sampling:
+  block_size: 4         # dit.block_size（服务器侧须同改 dit+vae）
+  patch_size: null      # 用权重自带 patch_size
+  timestep_num: 16      # ODE / 扩散步数
+  guidance_scale: 7.0
+  max_new_tokens: 64
+  temperature: 0.0
+  trace: true           # 开启采样循环插桩（失配定位）
+
+checkpoint:
+  dit: ${DIT_PATH}
+  vae: ${VAE_PATH}
+  tokenizer: ${TOKENIZER_PATH}
