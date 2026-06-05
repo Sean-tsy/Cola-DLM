@@ -1,0 +1,25 @@
+# H3 · block sweep —— 扫不同 block_size，定位「块内 vs 块边界」失配
+#
+# block_size 是 dit.block_size（模型配置属性，非推理函数入参）：服务器侧
+# 在加载 dit 后按 model_overrides 应用，再调 generate_task_repaint_inference。
+# 其余 sampling 旋钮固定，仅扫 block_size，配合 trace 做失配位置归因。
+#
+# 用法（仅服务器侧）：research.instrument.load_sweep_grid("research/configs/sweep/block_sweep.yaml")
+defaults:
+  task_name: dyck
+  timestep_num: 16
+  guidance_scale: 7.0
+  max_new_tokens: 64
+  temperature: 0.0
+  seed: 1234
+  trace: true
+
+sweep:
+  - name: block-1
+    block_size: 1
+  - name: block-2
+    block_size: 2
+  - name: block-4
+    block_size: 4   # 上游默认
+  - name: block-8
+    block_size: 8

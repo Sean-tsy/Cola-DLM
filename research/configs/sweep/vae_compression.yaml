@@ -1,0 +1,24 @@
+# H5 · VAE / latent 压缩率 sweep —— 扫 patch_size
+#
+# patch_size 是 vae.patch_size（模型配置属性，非推理入参）：n_i = L_i / patch_size，
+# 即 token 轴到 latent 轴的 1-D 压缩因子。patch_size 越大压缩率越高、latent 越短。
+# 注意 chunk = patch_size * block_size 决定每步推进的 token 数；服务器侧需保证所选
+# patch_size 与加载的 VAE 权重兼容（权重通常与某一 patch_size 绑定）——此处仅给出
+# sweep 骨架，实际可行取值在服务器侧按权重确定。
+defaults:
+  task_name: dyck
+  block_size: 4
+  timestep_num: 16
+  guidance_scale: 7.0
+  max_new_tokens: 64
+  temperature: 0.0
+  seed: 1234
+  trace: true
+
+sweep:
+  - name: patch-1
+    patch_size: 1   # 上游默认
+  - name: patch-2
+    patch_size: 2
+  - name: patch-4
+    patch_size: 4

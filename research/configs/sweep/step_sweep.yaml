@@ -1,0 +1,25 @@
+# 采样步数 sweep —— 扫 ODE / 扩散积分步数 timestep_num
+#
+# timestep_num 是 generate_task_repaint_inference 的入参（sampling 旋钮），
+# 直接透传。步数越多积分越精细；本 sweep 观察结构一致性随步数的变化，并配合
+# trace 的 ode_step 记录（drift_norm / txt_norm）定位失配出现的积分阶段。
+defaults:
+  task_name: dyck
+  block_size: 4
+  guidance_scale: 7.0
+  max_new_tokens: 64
+  temperature: 0.0
+  seed: 1234
+  trace: true
+
+sweep:
+  - name: steps-4
+    timestep_num: 4
+  - name: steps-8
+    timestep_num: 8
+  - name: steps-16
+    timestep_num: 16   # 上游默认
+  - name: steps-32
+    timestep_num: 32
+  - name: steps-64
+    timestep_num: 64
