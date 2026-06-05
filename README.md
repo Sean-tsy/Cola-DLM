@@ -97,11 +97,15 @@ Cola DLM targets **Python 3.9+** and **PyTorch 2.1+** on Linux / macOS.
 
 ### From source (recommended)
 
+This installs the **model package** (pulls in PyTorch) and is the path used on
+the **server** for running / sampling / evaluating the model. For local
+pure-Python development, see *Local development environment* below instead.
+
 ```bash
 git clone https://github.com/your-org/cola-dlm.git
 cd cola-dlm
 
-# Editable install with runtime dependencies
+# Editable install with runtime dependencies (torch, transformers, ...)
 pip install -e .
 
 # Or with dev extras (pytest, ruff, black, pre-commit)
@@ -113,6 +117,41 @@ pip install -e ".[dev]"
 ```bash
 pip install cola-dlm
 ```
+
+> **Running the model requires GPUs.** Installing `cola-dlm` pulls in PyTorch
+> and the model code; weight loading, sampling and evaluation are intended to
+> run on the **server**, not on a local laptop.
+
+### Local development environment (pure-Python)
+
+Local development for the diagnostic research overlay is **pure-Python**: you
+edit code, run lint, and run the fast unit tests — **without** installing torch
+or loading any model weights. Model running / sampling / evaluation happen only
+on the server.
+
+```bash
+python -m venv .venv && . .venv/bin/activate
+pip install -r requirements-test.txt   # pytest, ruff, black, jsonschema — NO torch
+pytest                                 # research/ unit tests run in seconds
+ruff check . && black --check .
+```
+
+Torch-dependent model smoke tests under `tests/` are automatically skipped when
+torch is absent (see `conftest.py`). To reproduce the **model** environment on
+the server, use `requirements.lock` instead (see below).
+
+| Where | What runs |
+| --- | --- |
+| **Local** | edit code · `ruff` / `black` lint · pure-Python `pytest` · commit |
+| **CI** | unified gate: lint + pure-Python unit tests (no torch, no model) |
+| **Server** | weight fetch · model sampling · evaluation (GPU; `requirements.lock`) |
+
+Dependency files:
+
+- `requirements-test.txt` — pure-Python test/lint deps (local + CI, no torch).
+- `requirements.txt` — model runtime deps (lower bounds).
+- `requirements.lock` — pinned model/GPU closure for **server & CI model-job**
+  reproduction; **not installed locally**.
 
 ---
 
@@ -284,8 +323,13 @@ cola-dlm/
 ├── tests/                    # Unit + smoke tests
 ├── eval_output/              # Reference benchmark outputs (CSV summary committed)
 ├── generate_task_data/       # Benchmark JSONL datasets
+├── research/                 # Diagnostic research overlay (pure-Python: data_gen, validators, eval)
+│   └── tests/                # Pure-Python unit tests (run locally + in CI, no torch)
+├── conftest.py               # Skips torch model tests when torch is absent (pure-Python env)
 ├── pyproject.toml            # Build + metadata + dep spec
-├── requirements.txt          # Pinned runtime deps
+├── requirements.txt          # Model runtime deps (lower bounds)
+├── requirements-test.txt     # Pure-Python test/lint deps (local + CI, no torch)
+├── requirements.lock         # Pinned model/GPU closure (server & CI model jobs)
 ├── LICENSE                   # Apache-2.0
 ├── NOTICE                    # Apache-2.0 attribution
 ├── SECURITY.md               # Vulnerability reporting

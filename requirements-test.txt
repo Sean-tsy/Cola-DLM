@@ -1,0 +1,25 @@
+# Pure-Python test dependencies for the Cola DLM diagnostic research overlay.
+#
+# Scope: LINT + UNIT TESTS for the pure-Python research layer ONLY
+#   (research/data_gen, research/validators, research/eval — generators,
+#   verifiers, metrics). It intentionally contains **NO torch / transformers /
+#   model code** and never loads model weights.
+#
+# Use locally and in CI:
+#     python -m venv .venv && . .venv/bin/activate
+#     pip install -r requirements-test.txt
+#     pytest            # research/tests run in seconds; model tests auto-skip
+#
+# Do NOT `pip install -e .` in this environment — the cola_dlm package pulls in
+# torch and turns this back into a model-run environment. Running / sampling /
+# evaluating the model and loading weights happen ONLY on the server (see
+# requirements.lock for the server/CI model-job reproduction set).
+#
+# Versions are pinned for reproducibility (local + CI parity).
+
+pytest==9.0.3
+pytest-cov==7.1.0
+ruff==0.15.16
+black==26.5.1
+jsonschema==4.26.0
+PyYAML==6.0.3

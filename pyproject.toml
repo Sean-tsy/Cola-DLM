@@ -105,4 +105,4 @@ target-version = ["py39", "py310", "py311", "py312"]
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-ra -q"
-testpaths = ["tests"]
+testpaths = ["tests", "research/tests"]

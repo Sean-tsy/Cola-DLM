@@ -1,17 +1,20 @@
-# Locked dependency versions for Cola DLM diagnostic research.
+# Locked dependency versions for the Cola DLM MODEL / GPU runtime.
 #
-# Generated on a CPU-only macOS dev environment (Python 3.13) via:
-#     python -m venv .venv && . .venv/bin/activate
-#     pip install -e ".[dev,serve]"
-#     pip freeze --exclude-editable > requirements.lock
+# Scope: SERVER & CI MODEL-JOB reproduction ONLY (weight loading, sampling,
+# evaluation). This set includes torch / transformers / tokenizers and is the
+# full pinned closure needed to RUN the model.
 #
-# Purpose: pin exact transitive versions so the local static-check / unit-test
-# environment matches the server-side GPU environment. Install with:
+# **Do NOT install this locally.** The local developer environment is
+# pure-Python (lint + unit tests for research/, no model) — use
+# `requirements-test.txt` instead. Running / sampling / evaluating the model and
+# fetching weights happen only on the server.
+#
+# Server install:
 #     pip install -r requirements.lock
 #
-# NOTE: torch here is the default (CPU) build. On the GPU server, install the
-# matching CUDA build of the SAME torch version (==2.12.0) instead of the wheel
-# pinned below, then `pip install -r requirements.lock` for everything else.
+# NOTE: torch here is the default (CPU) build captured at lock time. On the GPU
+# server, install the matching CUDA build of the SAME torch version (==2.12.0),
+# then `pip install -r requirements.lock` for everything else.
 annotated-doc==0.0.4
 annotated-types==0.7.0
 anyio==4.13.0

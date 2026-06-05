@@ -14,9 +14,25 @@
 ## 范围与约束
 
 - **当前只做诊断与评测**，暂不涉及后训练（SFT/DPO/RL）。本目录**不含**后训练相关子目录。
-- **本地只做静态检查与单元测试，不在本地跑模型 smoke。**
+- **本地开发环境为纯 Python，不安装 torch、不加载模型权重、不跑模型 smoke。**
+  本地只做 lint 与 `research/` 的单元测试（验证器 / 生成器 / 指标），秒级跑通。
 - **凡涉及 GPU / 权重的工作（获取权重、采样、评测）一律只在服务器执行。**
   本目录中的 `scripts/` 仅负责准备好可在服务器执行的脚本，不在本地运行。
+
+## 本地纯 Python 测试环境
+
+```bash
+python -m venv .venv && . .venv/bin/activate
+pip install -r requirements-test.txt   # pytest、ruff、black、jsonschema —— 不含 torch
+pytest                                 # research/tests 秒级跑通；torch 模型测试自动跳过
+```
+
+依赖分工：
+
+- `requirements-test.txt` —— 纯 Python 测试/lint 依赖（本地 + CI 门禁，无 torch）。
+- `requirements.lock` —— 模型/GPU 锁定闭包，仅供**服务器 & CI 模型作业**复现，**本地不安装**。
+
+研究层单测位于 [`tests/`](./tests/)（纯 Python，不导入模型）。
 
 ## 目录结构
 
@@ -36,5 +52,6 @@
 
 - 配置集中在 `configs/`，通过版本控制追踪；
 - 随机性通过显式 seed 固定（参见上游 `COLA_INFER_PER_SAMPLE_NOISE_SEED`）；
-- 依赖版本锁定在仓库根 `requirements.lock`，保证本地与服务器环境一致；
+- 依赖版本分两份锁定：纯 Python 测试用 `requirements-test.txt`（本地 + CI），
+  模型/GPU 运行用 `requirements.lock`（服务器 & CI 模型作业），互不混淆；
 - 大权重 / 大数据不进版本控制（见根 `.gitignore`），仅放服务器侧或大文件存储。

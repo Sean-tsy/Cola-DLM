@@ -113,6 +113,37 @@ pip install -e ".[dev]"
 pip install cola-dlm
 ```
 
+> **运行模型需要 GPU。** 安装 `cola-dlm` 会引入 PyTorch 与模型代码；权重加载、
+> 采样与评测应在**服务器**上运行，而非本地。
+
+### 本地开发环境（纯 Python）
+
+诊断研究层的本地开发是**纯 Python** 的：改代码、跑 lint、跑快速单测，
+**不安装 torch、不加载任何权重**。模型运行 / 采样 / 评测只在服务器进行。
+
+```bash
+python -m venv .venv && . .venv/bin/activate
+pip install -r requirements-test.txt   # pytest、ruff、black、jsonschema —— 不含 torch
+pytest                                 # research/ 单测秒级跑通
+ruff check . && black --check .
+```
+
+`tests/` 下依赖 torch 的模型冒烟测试在缺少 torch 时会自动跳过（见 `conftest.py`）。
+要在服务器上复现**模型**环境，请改用 `requirements.lock`（见下）。
+
+| 位置 | 运行内容 |
+| --- | --- |
+| **本地** | 改代码 · `ruff` / `black` lint · 纯 Python `pytest` · 提交 |
+| **CI** | 统一门禁：lint + 纯 Python 单测（无 torch、不跑模型） |
+| **服务器** | 取权重 · 模型采样 · 评测（GPU；`requirements.lock`） |
+
+依赖文件：
+
+- `requirements-test.txt` —— 纯 Python 测试/lint 依赖（本地 + CI，无 torch）。
+- `requirements.txt` —— 模型运行依赖（下界）。
+- `requirements.lock` —— 模型/GPU 锁定闭包，供**服务器 & CI 模型作业**复现；
+  **本地不安装**。
+
 ---
 
 ## 快速开始
