@@ -1,0 +1,13 @@
+# sha256 manifest for Cola DLM weights — TEMPLATE.
+#
+# Copy to research/scripts/weights.sha256 on the SERVER and fill in the real
+# hashes for your checkpoint release, then `fetch_weights.sh` verifies the
+# downloaded files with `sha256sum -c`. Paths are relative to ${WEIGHTS_DEST}
+# (default: hf_models/). Weights themselves are NEVER committed to git.
+#
+# Format: "<sha256>  <relative/path>"  (two spaces, as emitted by sha256sum).
+#
+# Example (replace the placeholder hashes with the published ones):
+# 0000000000000000000000000000000000000000000000000000000000000000  cola_dlm/cola_dit/model.safetensors
+# 0000000000000000000000000000000000000000000000000000000000000000  cola_dlm/cola_vae/model.safetensors
+# 0000000000000000000000000000000000000000000000000000000000000000  tokenizer.json

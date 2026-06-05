@@ -22,6 +22,7 @@ set -euo pipefail
 
 CONFIG="${1:?usage: run_experiment.sh <experiment-config.yaml>}"
 RESULTS_ROOT="${RESULTS_ROOT:-research/results}"
+NUM_GPUS="${NUM_GPUS:-1}"   # multi-GPU degree (passed through by submit_job.sh)
 
 : "${DIT_PATH:?set DIT_PATH (checkpoint placeholder ${DIT_PATH})}"
 : "${VAE_PATH:?set VAE_PATH}"
@@ -45,7 +46,7 @@ for SEED in ${SEEDS}; do
   # config to the loaded dit/vae per research/docs/change_map.md (patch_size
   # selects a matching checkpoint; block_size must be set on BOTH dit and vae).
   # TODO(server): invoke the model. Example shape:
-  #   python -m cola_dlm.inference \
+  #   NUM_GPUS=${NUM_GPUS} python -m cola_dlm.inference \
   #     --dit "${DIT_PATH}" --vae "${VAE_PATH}" --tokenizer "${TOKENIZER_PATH}" \
   #     --input "${BASE}/data/seed${SEED}.jsonl" \
   #     --output "${BASE}/samples/seed${SEED}.jsonl" \

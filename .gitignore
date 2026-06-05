@@ -114,3 +114,6 @@ research/results/*/logs/
 logs/
 wandb/
 
+
+# Server-filled weight checksum manifest (template is .example, tracked).
+research/scripts/weights.sha256

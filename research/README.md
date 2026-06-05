@@ -46,7 +46,7 @@ pytest                                 # research/tests 秒级跑通；torch 模
 | `eval/` | 评测 harness（聚合指标 + 绘图、归因分析） |
 | `scripts/` | 运行脚本（数据物化纯 CPU；采样/评测/同步**仅服务器侧 GPU**执行） |
 | `results/` | 结果归档（按 `run_id`：manifest + 产物；大文件不入库） |
-| `docs/` | 研究文档，含源码改动地图 `change_map.md` |
+| `docs/` | 研究文档：源码改动地图 `change_map.md`、本地↔服务器闭环 `server_workflow.md` |
 
 ## 复现性原则
 

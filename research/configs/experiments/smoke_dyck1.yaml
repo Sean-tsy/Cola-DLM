@@ -1,0 +1,25 @@
+# 最小冒烟实验：在服务器上先跑通整条「采样 → 评测」链路，确认无误后再放大。
+# 最短 Dyck-1、最少步数、最小规模；不要用于正式诊断，只用于链路验证。
+run_id: smoke_dyck1
+task: dyck
+n_samples: 8
+seeds: [0]
+
+data:
+  length: 4          # 最短可用偶数长度
+  max_depth: 2
+  k: 1               # Dyck-1：单一括号类型
+  mode: unconditional
+
+sampling:
+  block_size: 1      # 最小块长
+  timestep_num: 2    # 最少 ODE 步数
+  guidance_scale: 7.0
+  max_new_tokens: 16
+  temperature: 0.0
+  trace: true        # 验证插桩 trace 也能产出
+
+checkpoint:
+  dit: ${DIT_PATH}
+  vae: ${VAE_PATH}
+  tokenizer: ${TOKENIZER_PATH}

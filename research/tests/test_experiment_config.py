@@ -34,12 +34,28 @@ def _base(**over) -> ExperimentConfig:
 
 
 def test_example_configs_load() -> None:
-    for fname in ["dyck_L32_D6_k2_blk4.yaml", "json_strict_blk4.yaml", "tool_call_blk4.yaml"]:
-        cfg = load_experiment(_EXP_DIR / fname)
+    yamls = sorted(_EXP_DIR.glob("*.yaml"))
+    assert yamls, "no experiment configs found"
+    for path in yamls:
+        cfg = load_experiment(path)
         assert cfg.run_id
         assert cfg.seeds
         # run_id must equal the file stem by convention (traceability).
-        assert cfg.run_id == Path(fname).stem
+        assert cfg.run_id == path.stem
+
+
+def test_smoke_config_is_minimal_and_valid() -> None:
+    cfg = load_experiment(_EXP_DIR / "smoke_dyck1.yaml")
+    # Minimal end-to-end validation knobs: shortest Dyck-1, fewest steps.
+    assert cfg.task == "dyck"
+    assert cfg.data["k"] == 1
+    assert cfg.timestep_num <= 4
+    assert cfg.n_samples <= 16
+    assert len(cfg.seeds) == 1
+    # It must still produce valid balanced Dyck words.
+    for rec in cfg.materialize_data(cfg.seeds[0]):
+        word = rec["meta"]["prefix"] + rec["ground_truth"]
+        assert check_brackets(word).valid
 
 
 def test_sweep_for_composes_seed_and_name() -> None:
