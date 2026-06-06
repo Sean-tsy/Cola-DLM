@@ -76,6 +76,10 @@
     - 服务器切到本地告知的 `EXPECTED_SHA`，用 `check_sync.sh` 核对：**HEAD 与期望 SHA
       不一致、或工作树有未提交改动时必须非零退出**，阻止在不可复现状态下起作业。
     - 核对通过后，实验 `manifest.json` 里记录的 `git_sha` 才可信、可回滚。
+    - **本地触发（B 模式）**：本地 agent 可用 `research/scripts/remote/` 四件套
+      （`sync.sh` / `submit.sh` / `status.sh` / `fetch.sh`）做「提交 → 轮询 → 拉回」，
+      作业在服务器 **detached 后台**运行、命令秒回、本地绝不前台阻塞（见
+      [`research/scripts/remote/README.md`](../scripts/remote/README.md)）。
 
 ---
 
