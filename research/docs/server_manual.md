@@ -35,8 +35,8 @@
   venv、权重、results、各类缓存）从容量小的 home 盘重定向到数据盘；克隆代码、切到
   研究分支并锁定到与本地一致的提交。
 - **【完成要求】**
-    - **工作根落 data0**：代码仓克隆到 `/data0/users/siyuan` 下，venv 建在仓库目录内；
-      data0 为工作主盘，data1 作备用/溢出。**home 盘不落任何产物。**
+    - **工作根落 data0**：代码仓克隆到 `/data0/users/siyuan/projects/Cola-DLM`，venv 建在
+      仓库目录内；data0 为工作主盘，data1 作备用/溢出。**home 盘不落任何产物。**
     - **缓存重定向**：pip、HuggingFace、临时文件（`TMPDIR`）均指向 data0，避免默认写
       `$HOME` / `/tmp` 把 home 写满；每个新会话开头先设好这些环境变量。
     - **GPU 依赖锁定**：安装 `requirements.lock`（含 torch 的固定闭包，仅服务器 & CI

@@ -15,7 +15,7 @@
 # Required env:
 #   REMOTE        : ssh alias from ~/.ssh/config (e.g. "cola-gpu"); key-based.
 # Optional env (defaults):
-#   REMOTE_REPO   : repo path on server      (default /data0/users/siyuan/Cola-DLM)
+#   REMOTE_REPO   : repo path on server      (default /data0/users/siyuan/projects/Cola-DLM)
 #   RESULTS_ROOT  : results dir (local+remote, relative to repo) (default research/results)
 #   LOG_DIR       : detached-job log dir on server, relative to repo (default logs)
 #   SSH           : ssh command              (default "ssh"; override for tests)
@@ -25,7 +25,7 @@
 set -euo pipefail
 
 REMOTE="${REMOTE:?set REMOTE (ssh alias from ~/.ssh/config; key-based, no password)}"
-REMOTE_REPO="${REMOTE_REPO:-/data0/users/siyuan/Cola-DLM}"
+REMOTE_REPO="${REMOTE_REPO:-/data0/users/siyuan/projects/Cola-DLM}"
 RESULTS_ROOT="${RESULTS_ROOT:-research/results}"
 LOG_DIR="${LOG_DIR:-logs}"
 SSH="${SSH:-ssh}"

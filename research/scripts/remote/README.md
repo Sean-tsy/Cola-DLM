@@ -34,7 +34,7 @@ Host cola-gpu
 | 变量 | 默认 | 说明 |
 | --- | --- | --- |
 | `REMOTE` | （必填） | `~/.ssh/config` 的 ssh 别名（key-based） |
-| `REMOTE_REPO` | `/data0/users/siyuan/Cola-DLM` | 服务器仓库路径 |
+| `REMOTE_REPO` | `/data0/users/siyuan/projects/Cola-DLM` | 服务器仓库路径 |
 | `RESULTS_ROOT` | `research/results` | 结果目录（本地 + 服务器） |
 | `LOG_DIR` | `logs` | 服务器侧 detached 作业日志目录（相对仓库） |
 | `LAUNCHER` | `nohup` | `nohup` \| `tmux` \| `sbatch` |
