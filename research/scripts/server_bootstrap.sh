@@ -53,7 +53,7 @@ if [[ -n "${TORCH_WHEEL_URL:-}" ]]; then
   WHEEL_NAME="$(basename "${TORCH_WHEEL_URL}" | sed 's/%2[bB]/+/g')"
   echo "[bootstrap] curl torch wheel ${TORCH_WHEEL_URL} -> /tmp/${WHEEL_NAME}"
   curl -fL --retry 3 -o "/tmp/${WHEEL_NAME}" "${TORCH_WHEEL_URL}"
-  pip install "/tmp/${WHEEL_NAME}"
+  pip install "/tmp/${WHEEL_NAME}" -i "${PIP_INDEX}"
   rm -f "/tmp/${WHEEL_NAME}"
 else
   echo "[bootstrap] installing torch==${TORCH_VERSION} from ${TORCH_INDEX}"
