@@ -96,3 +96,26 @@ ruff check . && black --check . && pytest -q
 
 > 本研究当前阶段尤其强调**骨架优先**与**简单优先**：按环节顺序推进，每个环节先给
 > 骨架与说明，不要提前写实现。
+
+## 跨工具协作（单一真相源）
+
+本文件 **`AGENTS.md` 是 Claude Code / Codex / Copilot 三家工具共用的唯一真相源**。
+各工具的原生入口只做**转发**，不维护会漂移的多份副本：
+
+- **Claude Code**：仓库根 `CLAUDE.md` 仅含一行 `@AGENTS.md`（导入本文件），不另写约定。
+- **Copilot**：`.github/copilot-instructions.md` 指向并摘录本文件要点，细则以本文件为准。
+- **Codex**：原生读取本 `AGENTS.md`，无需额外入口。
+
+> 改约定时**只改 `AGENTS.md`**；入口文件保持「转发/摘录」职责，避免三家各执一词。
+> 仓库根的 `Desktop/CLAUDE.md`（用户全局准则）仍作通用防错准则与本文件合并使用。
+
+## 远程协作纪律（硬约束）
+
+涉及服务器的作业，三家工具行为必须一致：
+
+- 🚫 **绝不前台阻塞**：服务器上的采样 / 评测 / 取权重等长作业**必须 detached 后台运行**
+  （如 `nohup ... &` / `tmux` / 调度器作业），不在交互式前台挂起等待。
+- 🔑 **免密 ssh**：本地 ↔ 服务器走免密（key-based）ssh，不在脚本/日志里留口令。
+- 📜 **可追踪**：后台作业落独立日志与 `run_id`，便于断连后重连查看，不依赖前台输出。
+- 🧭 **状态可复现**：起作业前用 `check_sync.sh` 核对服务器 commit 与本地一致（见
+  [`research/docs/server_manual.md`](research/docs/server_manual.md)）。
