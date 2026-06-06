@@ -35,23 +35,39 @@ RUN_ID="$(python -c "from research.experiment import load_experiment; print(load
 SEEDS="$(python -c "from research.experiment import load_experiment; print(' '.join(map(str, load_experiment('${CONFIG}').seeds)))")"
 BASE="${RESULTS_ROOT}/${RUN_ID}"
 
-# 2) For each seed: sample with the model and capture diagnostics traces.
+# 2) For each seed: sample with the model (data-parallel across NUM_GPUS) and
+#    capture diagnostics traces. block_size/patch_size overrides + prompt->question
+#    are applied inside research.scripts.infer_cola (no upstream core edit).
+mkdir -p "${BASE}/samples" "${BASE}/traces"
 for SEED in ${SEEDS}; do
-  echo "[run_experiment] ${RUN_ID} seed=${SEED}"
-  export COLA_INFER_PER_SAMPLE_NOISE_SEED="${SEED}"   # upstream deterministic noise
-  export COLA_DIAG_TRACE=1                            # enable Phase-4 instrumentation
-  export COLA_DIAG_TRACE_PATH="${BASE}/traces/seed${SEED}.jsonl"
+  echo "[run_experiment] ${RUN_ID} seed=${SEED} (NUM_GPUS=${NUM_GPUS})"
+  IN="${BASE}/data/seed${SEED}.jsonl"
+  OUT="${BASE}/samples/seed${SEED}.jsonl"
 
-  # TODO(server): apply model_overrides (block_size / patch_size) from the
-  # config to the loaded dit/vae per research/docs/change_map.md (patch_size
-  # selects a matching checkpoint; block_size must be set on BOTH dit and vae).
-  # TODO(server): invoke the model. Example shape:
-  #   NUM_GPUS=${NUM_GPUS} python -m cola_dlm.inference \
-  #     --dit "${DIT_PATH}" --vae "${VAE_PATH}" --tokenizer "${TOKENIZER_PATH}" \
-  #     --input "${BASE}/data/seed${SEED}.jsonl" \
-  #     --output "${BASE}/samples/seed${SEED}.jsonl" \
-  #     --task "$(python -c "from research.experiment import load_experiment; print(load_experiment('${CONFIG}').task)")"
-  echo "[run_experiment] TODO: wire model invocation -> ${BASE}/samples/seed${SEED}.jsonl"
+  pids=()
+  for ((r = 0; r < NUM_GPUS; r++)); do
+    CUDA_VISIBLE_DEVICES="${r}" \
+    COLA_INFER_PER_SAMPLE_NOISE_SEED="${SEED}" \
+    COLA_DIAG_TRACE=1 \
+    COLA_DIAG_TRACE_PATH="${BASE}/traces/seed${SEED}_rank${r}.jsonl" \
+      python -m research.scripts.infer_cola \
+        --config "${CONFIG}" \
+        --input-jsonl "${IN}" \
+        --output-jsonl "${OUT}" \
+        --dit-path "${DIT_PATH}" \
+        --vae-path "${VAE_PATH}" \
+        --tokenizer-path "${TOKENIZER_PATH}" \
+        --rank "${r}" --world-size "${NUM_GPUS}" &
+    pids+=("$!")
+  done
+  wait "${pids[@]}"
+
+  # Merge per-rank shards into a single ordered-by-rank samples file.
+  if [[ "${NUM_GPUS}" -gt 1 ]]; then
+    cat "${OUT%.jsonl}"_rank*.jsonl > "${OUT}"
+    rm -f "${OUT%.jsonl}"_rank*.jsonl
+  fi
+  echo "[run_experiment] seed=${SEED} samples -> ${OUT}"
 done
 
 # 3) Evaluate structural consistency over the produced samples + traces (CPU).

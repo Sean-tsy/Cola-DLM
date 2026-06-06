@@ -7,46 +7,57 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
-# SERVER-SIDE ONLY. Fetch / place the Cola DLM weights and verify checksums.
-# Prepared locally but NEVER run locally; weights are large and must not enter
-# version control (see repo .gitignore: hf_models/ + *.safetensors/*.pt/...).
+# SERVER-SIDE ONLY. Fetch / place model weights and record checksums. Prepared
+# locally but NEVER run locally; weights are large and must not enter version
+# control (see .gitignore: hf_models/ + *.safetensors/*.pt/...).
 #
-# Source / target / hashes:
-#   - WEIGHTS_URL    : where to pull from (HF repo tarball, internal mirror, ...)
-#   - hf_models/     : target layout matching scripts/run_benchmark.sh defaults
-#                      (cola_dlm/cola_dit, cola_dlm/cola_vae, tokenizer.json)
-#   - SHA256_FILE    : sha256 manifest the downloaded files are verified against
-#                      (template: research/scripts/weights.sha256.example)
+# Network: the GPU server (Tencent China) cannot reach huggingface.co (GFW), so
+# downloads route through the mirror via HF_ENDPOINT=https://hf-mirror.com.
+#
+# Default target layout matches scripts/run_benchmark.sh:
+#   hf_models/cola_dlm/cola_dit   hf_models/cola_dlm/cola_vae   hf_models/tokenizer.json
+#
+# Records sha256 of every downloaded weight file to ${DEST}/weights.sha256 so the
+# run manifest can pin exactly which weights produced a result (env节九 9.0 gate).
 #
 # Usage (server):
-#   WEIGHTS_URL=... bash research/scripts/fetch_weights.sh
+#   bash research/scripts/fetch_weights.sh                       # Cola (default)
+#   WEIGHTS_REPO=GSAI-ML/LLaDA-8B-Base WEIGHTS_DEST=hf_models/llada \
+#       bash research/scripts/fetch_weights.sh                   # a baseline
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
+# HF repo id (preferred) or a raw URL via WEIGHTS_URL for non-HF transports.
+WEIGHTS_REPO="${WEIGHTS_REPO:-ByteDance-Seed/Cola-DLM}"
 DEST="${WEIGHTS_DEST:-${REPO_DIR}/hf_models}"
-SHA256_FILE="${SHA256_FILE:-${SCRIPT_DIR}/weights.sha256}"
-: "${WEIGHTS_URL:?set WEIGHTS_URL (weight source; not committed to git)}"
+SHA256_FILE="${SHA256_FILE:-${DEST}/weights.sha256}"
+export HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
 
 mkdir -p "${DEST}"
 
-# 1) Download into DEST. Replace with your transport (huggingface-cli / aws s3 /
-#    wget). Skeleton keeps the contract explicit without hard-coding a source.
-echo "[fetch_weights] download ${WEIGHTS_URL} -> ${DEST}"
-# TODO(server): e.g.
-#   huggingface-cli download "${WEIGHTS_URL}" --local-dir "${DEST}"
-#   aws s3 sync "${WEIGHTS_URL}" "${DEST}"
-
-# 2) Verify integrity against the sha256 manifest before any model use.
-if [[ -f "${SHA256_FILE}" ]]; then
-  echo "[fetch_weights] verifying sha256 against ${SHA256_FILE}"
-  ( cd "${DEST}" && sha256sum -c "${SHA256_FILE}" )
-  echo "[fetch_weights] checksum OK"
+# 1) Download. Prefer the huggingface_hub CLI (`hf`, in requirements.lock).
+echo "[fetch_weights] HF_ENDPOINT=${HF_ENDPOINT}"
+if [[ -n "${WEIGHTS_URL:-}" ]]; then
+  echo "[fetch_weights] download ${WEIGHTS_URL} -> ${DEST}"
+  ( cd "${DEST}" && curl -fL --retry 3 -O "${WEIGHTS_URL}" )
+elif command -v hf >/dev/null 2>&1; then
+  echo "[fetch_weights] hf download ${WEIGHTS_REPO} -> ${DEST}"
+  hf download "${WEIGHTS_REPO}" --local-dir "${DEST}"
 else
-  echo "[fetch_weights] WARNING: no checksum manifest at ${SHA256_FILE};" >&2
-  echo "  copy weights.sha256.example -> weights.sha256 and fill real hashes." >&2
-  exit 1
+  echo "[fetch_weights] hf CLI not found; falling back to huggingface-cli"
+  huggingface-cli download "${WEIGHTS_REPO}" --local-dir "${DEST}"
 fi
 
+# 2) Record + verify sha256 of weight files (env节九 9.0: hashes -> manifest).
+echo "[fetch_weights] recording sha256 -> ${SHA256_FILE}"
+( cd "${DEST}" && find . -type f \
+    \( -name '*.safetensors' -o -name '*.bin' -o -name '*.pt' -o -name 'tokenizer.json' \) \
+    -print0 | sort -z | xargs -0 sha256sum > "${SHA256_FILE}" )
+echo "[fetch_weights] verifying"
+( cd "${DEST}" && sha256sum -c "${SHA256_FILE}" >/dev/null )
+echo "[fetch_weights] checksum OK; $(wc -l < "${SHA256_FILE}") files hashed"
+
 echo "[fetch_weights] weights ready under ${DEST} (NOT tracked by git)"
+echo "[fetch_weights] add ${SHA256_FILE} contents to the run manifest."

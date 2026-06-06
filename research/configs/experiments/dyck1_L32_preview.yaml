@@ -1,0 +1,27 @@
+# env节九 9.2 预热对齐 · H1 三方对照预览（方向性信号，非主诊断）。
+# Dyck-1, L=32, 无条件生成。规模偏小（早期信号即可），block_size 用模型默认 4。
+# 三方对照（Cola vs ~2B AR vs LLaDA）在评测层比 well-formed rate；本 config 仅描述
+# 探针数据与采样口径，模型无关。
+run_id: dyck1_L32_preview
+task: dyck
+n_samples: 64
+seeds: [1234, 2025]
+
+data:
+  length: 32
+  max_depth: 8
+  k: 1
+  mode: unconditional
+
+sampling:
+  block_size: 4
+  timestep_num: 16
+  guidance_scale: 7.0
+  max_new_tokens: 48
+  temperature: 0.0
+  trace: true
+
+checkpoint:
+  dit: ${DIT_PATH}
+  vae: ${VAE_PATH}
+  tokenizer: ${TOKENIZER_PATH}

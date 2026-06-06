@@ -1,0 +1,25 @@
+# env节九 9.2 预热对齐 · 极小 JSON smoke（H1 预览的结构化分支）。
+# 最小规模的 JSON 严格格式探针，用于早期 parse/schema-valid 方向性信号，
+# 不作正式 L1 baseline（正式 L1 见 json_strict_blk4.yaml 与 JSONSchemaBench）。
+run_id: json_smoke
+task: structured
+n_samples: 16
+seeds: [1234]
+
+data:
+  fmt: json
+  max_depth: 1
+  max_props: 2
+
+sampling:
+  block_size: 4
+  timestep_num: 16
+  guidance_scale: 7.0
+  max_new_tokens: 64
+  temperature: 0.0
+  trace: true
+
+checkpoint:
+  dit: ${DIT_PATH}
+  vae: ${VAE_PATH}
+  tokenizer: ${TOKENIZER_PATH}
