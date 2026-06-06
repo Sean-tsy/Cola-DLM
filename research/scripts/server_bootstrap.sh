@@ -71,6 +71,13 @@ echo "[bootstrap] installing requirements.lock (torch pin filtered)"
 grep -ivE '^torch==' requirements.lock > /tmp/cola_req.nolorch.txt
 pip install -r /tmp/cola_req.nolorch.txt -i "${REQ_INDEX}"
 
+# 2b) Pure-Python research deps (validators/instrument import jsonschema + PyYAML
+#     at runtime, e.g. inside run_experiment.sh's gen_data/eval steps). The lock
+#     is the model closure and omits jsonschema, so install the research/test set
+#     too: the server runs the research pipeline as well as the model.
+echo "[bootstrap] installing requirements-test.txt (research runtime deps)"
+pip install -r requirements-test.txt -i "${REQ_INDEX}"
+
 # 3) Sanity: torch sees CUDA, key model deps import.
 python - <<'PY'
 import torch, transformers, tokenizers, huggingface_hub
