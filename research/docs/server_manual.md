@@ -42,14 +42,54 @@ pip install -r requirements.lock
 > - `requirements.lock` 顶部已标注「SERVER & CI MODEL-JOB reproduction ONLY」。
 > - `requirements-test.txt`（纯 Python，无 torch）只供本地 / CI 门禁，服务器**无需**用它跑模型。
 > - 如服务器 CUDA 版本与锁文件中的 torch 轮子不匹配，按集群实际 CUDA 重装对应
->   torch 版本，其余依赖保持锁定。
+>   torch 版本，其余依赖保持锁定。本节点为 **CUDA 12.8**（驱动 570.158.01），
+>   与 PyTorch `cu124`/`cu121` 轮子向后兼容；如锁文件 torch 不匹配，装对应
+>   `--index-url https://download.pytorch.org/whl/cu124` 的 torch 即可。
 
 环境自检（不加载权重）：
 
 ```bash
-python -c "import torch; print('torch', torch.__version__, 'cuda', torch.cuda.is_available())"
+python -c "import torch; print('torch', torch.__version__, 'cuda', torch.cuda.is_available(), 'n_gpu', torch.cuda.device_count())"
 nvidia-smi
 ```
+
+---
+
+## 算力资源（本工程需求）
+
+> 本工程**只做诊断与评测（推理 / 采样），不做任何训练**，因此算力需求**很轻**：
+> 每张卡放一份完整模型副本即可，**无需模型并行 / 张量并行**，多卡仅用于**数据并行**
+> 提升吞吐。
+
+**已确认的服务器配置**（来自 `nvidia-smi`）：
+
+| 项 | 值 |
+| --- | --- |
+| GPU | NVIDIA **A100-SXM4-40GB** ×8（单节点，NVLink/SXM4） |
+| 单卡显存 | 40 GB |
+| 驱动 / CUDA | 570.158.01 / **CUDA 12.8** |
+| 状态 | 全部空闲（0% util、0 MiB 占用） |
+
+**本工程实际需求**：
+
+| 用途 | GPU 需求 | 说明 |
+| --- | --- | --- |
+| 最小冒烟（`smoke_dyck1`，8 样本、steps=2） | **1×A100-40GB** | 几分钟级；验证链路用 |
+| 单个正式实验（L0/L1/L2，256 样本、steps≤16、L≤32） | **1×A100-40GB 可跑**；**8× 推荐** | 单卡可完成；8 卡数据并行 ~8× 提速 |
+| 全量 L0–L2 × 多 seed(3) × sweep(块长/步数/压缩) | **8×A100-40GB** | 纯吞吐扩展，stride 分片到 8 卡 |
+
+要点：
+
+- **显存充裕**：诊断序列短（L≤32、`max_new_tokens`≤64）、batch 小，单份
+  DiT+VAE 副本远低于 40 GB；**40 GB 单卡即可承载完整模型**，不需切分。
+- **并行方式**：仅 `--rank` / `--world_size` 数据并行（`raw_data[rank::world_size]`
+  stride 分片，见环节五），**不启用任何模型并行**。给定 8 卡，`NUM_GPUS=8`。
+- **CPU / 内存 / 磁盘**：数据物化、`prompt→question` 适配、验证器评测均为纯 CPU、
+  内存友好；磁盘主要用于**权重**（DiT+VAE+tokenizer，按发布大小预留，建议 ≥50 GB
+  空间）与 `research/results/` 产物。
+- **结论**：**最低 1×A100-40GB 即可跑通全部诊断任务**；为缩短全量 sweep 墙钟时间，
+  推荐用本节点的 **8×A100-40GB 做数据并行**。本手册多卡示例默认 `NUM_GPUS=8`，
+  按实际可用卡数调整即可。
 
 ---
 
@@ -221,6 +261,9 @@ NUM_GPUS=1 EXPECTED_SHA="${EXPECTED_SHA}" LAUNCHER=local \
 冒烟通过后，按需逐级放大 L / D / 块长与规模。改实验配置 = 新实验 = 新 commit。
 
 ### 5.1 多卡数据并行（上游原生 stride 分片）
+
+> 本节点 8×A100-40GB，**仅做数据并行**（每卡一份完整模型副本，无模型并行）。
+> `NUM_GPUS` 设为实际可用卡数（满节点 = 8）。
 
 上游 `cola_dlm.inference` 支持 `--rank` / `--world_size` 做数据并行：每卡跑
 `raw_data[rank::world_size]`，每卡输出 `<task>_rank<rank>.jsonl`，最后合并。模式
