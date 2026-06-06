@@ -57,21 +57,31 @@ class DyckSample:
         return self.prefix + self.completion
 
     def to_record(self) -> dict:
-        """Render to an inference-style JSONL record (id / prompt / ground_truth)."""
+        """Render to an inference-style JSONL record (id / prompt / ground_truth).
+
+        Structural symbols are **space-delimited** (one bracket per token under the
+        OLMo 2 tokenizer; see env节九 9.1 tokenization gate). The raw (un-spaced)
+        word stays in ``meta`` as the canonical structural form; validators ignore
+        non-bracket characters, so spacing does not affect structural metrics.
+        """
+        spaced_prefix = space_delimit(self.prefix)
+        spaced_completion = space_delimit(self.completion)
         if self.mode == "completion":
             prompt = (
                 f"Continue the following bracket sequence so every bracket is correctly "
-                f"closed (Dyck-{self.k}):\n{self.prefix}"
+                f"closed (Dyck-{self.k}). Separate each bracket with a single space:\n"
+                f"{spaced_prefix}"
             )
         else:
             prompt = (
                 f"Generate a valid Dyck-{self.k} bracket sequence of length {self.length} "
-                f"with maximum nesting depth {self.max_depth}."
+                f"with maximum nesting depth {self.max_depth}. Separate each bracket with "
+                f"a single space."
             )
         return {
             "id": self.id,
             "prompt": prompt,
-            "ground_truth": self.completion,
+            "ground_truth": spaced_completion,
             "meta": {
                 "probe": "dyck",
                 "mode": self.mode,
@@ -80,8 +90,19 @@ class DyckSample:
                 "max_depth": self.max_depth,
                 "max_pairing_distance": self.max_pairing_distance,
                 "prefix": self.prefix,
+                "spacing": "space-delimited",
             },
         }
+
+
+def space_delimit(word: str) -> str:
+    """Insert a single space between every character (env节九 9.1 convention).
+
+    Dyck words contain only bracket symbols, so this puts each bracket on its own
+    token under the OLMo 2 BPE tokenizer (which otherwise merges dense brackets
+    like ``(()`` into one token). Empty input yields an empty string.
+    """
+    return " ".join(word)
 
 
 def _measure(word: str) -> tuple[int, int]:

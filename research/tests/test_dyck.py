@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import pytest
 
-from research.data_gen.dyck import generate_dyck
+from research.data_gen.dyck import generate_dyck, space_delimit
 from research.validators.stack import BracketErrorType, check_brackets, repair_distance
 
 _PAIR_CHARS = set("()[]{}<>")
@@ -121,3 +121,22 @@ def test_to_record_shape() -> None:
     assert set(rec) == {"id", "prompt", "ground_truth", "meta"}
     assert rec["meta"]["probe"] == "dyck"
     assert rec["meta"]["mode"] == "completion"
+
+
+def test_space_delimit_helper() -> None:
+    assert space_delimit("(())") == "( ( ) )"
+    assert space_delimit("(") == "("
+    assert space_delimit("") == ""
+
+
+def test_to_record_is_space_delimited() -> None:
+    # env节九 9.1: structural symbols must be space-delimited (1 token/bracket).
+    for mode in ("unconditional", "completion"):
+        rec = generate_dyck(1, seed=1, length=8, max_depth=3, k=2, mode=mode)[0].to_record()
+        gt = rec["ground_truth"]
+        brackets = [c for c in gt if c in _PAIR_CHARS]
+        # Every bracket is isolated by whitespace: no two brackets are adjacent.
+        assert " ".join(brackets) == gt
+        # Spacing does not break structural validity (validator ignores spaces).
+        assert check_brackets(rec["meta"]["prefix"] + "".join(brackets)).valid
+        assert rec["meta"]["spacing"] == "space-delimited"
