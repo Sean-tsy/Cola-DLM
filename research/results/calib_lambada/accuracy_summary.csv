@@ -1,0 +1,10 @@
+task,calib_lambada
+lambada,50.90
+mmlu,
+obqa,
+hellaswag,
+race,
+siqa,
+squad,
+story_cloze,
+tasks_average,50.90

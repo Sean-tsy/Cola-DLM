@@ -111,6 +111,10 @@ research/results/*/data/
 research/results/*/samples/
 research/results/*/traces/
 research/results/*/logs/
+# Calibration/benchmark runs: keep manifest.json + accuracy_summary.csv only,
+# never the reconstructed inputs or per-sample model outputs.
+research/results/*/generate_task_data/
+research/results/*/tasks_*/
 logs/
 wandb/
 

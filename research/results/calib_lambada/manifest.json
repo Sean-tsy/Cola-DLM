@@ -1,0 +1,37 @@
+{
+  "run_id": "calib_lambada",
+  "phase": "9.2-calibration-reproduction",
+  "description": "Reproduce committed open-source LAMBADA accuracy with the official harness to validate inference/sampling/scoring pipeline before H1+ diagnosis.",
+  "git_sha": "cc1a0603731f084b8be443a7a0325b03fd97f8be",
+  "server": "cityu_tecent (siyuan@43.139.25.20, 8xA100-40GB, CUDA12.8)",
+  "task": "lambada",
+  "input_reconstruction": "research.scripts.prep_calibration from eval_output/tasks_default/lambada.jsonl (lambada template == question verbatim, offline, no dataset download)",
+  "harness": "scripts/run_benchmark.sh (upstream, unchanged)",
+  "settings": {
+    "timestep_num": 16,
+    "guidance_scale": 7.0,
+    "temperature": 0.0,
+    "max_new_tokens": 32,
+    "max_samples": 1000,
+    "num_gpus": 8,
+    "pad_token_id": 100277,
+    "eos_token_id": 100257,
+    "im_end_token_id": 100265,
+    "per_sample_noise_seed": 66
+  },
+  "weights_sha256": {
+    "cola_dit/model-00001-of-00002.safetensors": "8e4f4f2823d47553db823036cb80c5c5fec3f1a8769f17b4c2904f69b1bfe94e",
+    "cola_dit/model-00002-of-00002.safetensors": "fa0ceadba148ab3d13b89ae6c6906db2ece5884784839fb5433dcdb8354f955f",
+    "cola_vae/model.safetensors": "2b27cf0a73ecf687d37c28d45881117960979436ed6ec908abd44330b23e991c",
+    "tokenizer.json": "3ca996cca8afea58b34e95c353e859333592642a5e51d695d7a6dbbaf692dfe9"
+  },
+  "result": {
+    "measured_accuracy_pct": 50.90,
+    "reference_accuracy_pct": 50.80,
+    "reference_source": "eval_output/accuracy_summary.csv",
+    "abs_delta": 0.10,
+    "tolerance": 3.0,
+    "verdict": "PASS"
+  },
+  "n_samples": 1000
+}
