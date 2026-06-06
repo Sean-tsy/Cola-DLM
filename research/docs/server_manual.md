@@ -23,15 +23,15 @@
 
 | 用途 | 路径 | 盘 |
 | --- | --- | --- |
-| 工作主目录（代码 / venv / 权重 / results） | `/data0/siyuan` | data0 |
-| 备用 / 溢出（data0 写满时迁移目标） | `/data1/siyuan` | data1 |
+| 工作主目录（代码 / venv / 权重 / results） | `/data0/users/siyuan` | data0 |
+| 备用 / 溢出（data0 写满时迁移目标） | `/data1/users/siyuan` | data1 |
 
 在**每个新 shell 会话开头**先设好工作根与缓存重定向（把 pip / HuggingFace / tmp
 缓存都赶到 data0，避免写满 home）：
 
 ```bash
-export WORK_ROOT=/data0/siyuan        # 工作主盘
-export OVERFLOW_ROOT=/data1/siyuan    # 备用/溢出盘
+export WORK_ROOT=/data0/users/siyuan        # 工作主盘
+export OVERFLOW_ROOT=/data1/users/siyuan    # 备用/溢出盘
 # 缓存与临时文件重定向到数据盘（关键：默认会写 $HOME 和 /tmp）
 export PIP_CACHE_DIR="$WORK_ROOT/.cache/pip"
 export HF_HOME="$WORK_ROOT/.cache/huggingface"
@@ -49,8 +49,8 @@ mkdir -p "$PIP_CACHE_DIR" "$HF_HOME" "$TMPDIR"
 
 ```bash
 # 0) 工作根与缓存重定向（见上「存储布局」，每个会话先执行）
-export WORK_ROOT=/data0/siyuan
-export OVERFLOW_ROOT=/data1/siyuan
+export WORK_ROOT=/data0/users/siyuan
+export OVERFLOW_ROOT=/data1/users/siyuan
 export PIP_CACHE_DIR="$WORK_ROOT/.cache/pip"
 export HF_HOME="$WORK_ROOT/.cache/huggingface"
 export TMPDIR="$WORK_ROOT/tmp"
@@ -125,7 +125,7 @@ nvidia-smi
   stride 分片，见环节五），**不启用任何模型并行**。给定 8 卡，`NUM_GPUS=8`。
 - **CPU / 内存 / 磁盘**：数据物化、`prompt→question` 适配、验证器评测均为纯 CPU、
   内存友好；磁盘主要用于**权重**（DiT+VAE+tokenizer，按发布大小预留，建议 ≥50 GB
-  空间）与 `research/results/` 产物——二者均放 **data0**（`/data0/siyuan`），
+  空间）与 `research/results/` 产物——二者均放 **data0**（`/data0/users/siyuan`），
   **不要落 home**（home 容量小）；data0 不足时溢出到 data1（见「存储布局」）。
 - **结论**：**最低 1×A100-40GB 即可跑通全部诊断任务**；为缩短全量 sweep 墙钟时间，
   推荐用本节点的 **8×A100-40GB 做数据并行**。本手册多卡示例默认 `NUM_GPUS=8`，
@@ -150,7 +150,7 @@ WEIGHTS_URL="<weight-source>" bash research/scripts/fetch_weights.sh
 仓库已克隆在 `$WORK_ROOT/Cola-DLM`（data0），故 `hf_models/` **天然落在 data0**：
 
 ```
-$WORK_ROOT/Cola-DLM/hf_models/   # = /data0/siyuan/Cola-DLM/hf_models
+$WORK_ROOT/Cola-DLM/hf_models/   # = /data0/users/siyuan/Cola-DLM/hf_models
   cola_dlm/cola_dit/      # DiT 先验权重目录
   cola_dlm/cola_vae/      # VAE 权重目录
   tokenizer.json          # 分词器
@@ -505,7 +505,7 @@ df -h "$WORK_ROOT" "$OVERFLOW_ROOT"   # 随时核对两盘余量
 
 ```bash
 # 0) 工作盘与缓存重定向（避开小 home 盘）
-export WORK_ROOT=/data0/siyuan OVERFLOW_ROOT=/data1/siyuan
+export WORK_ROOT=/data0/users/siyuan OVERFLOW_ROOT=/data1/users/siyuan
 export PIP_CACHE_DIR=$WORK_ROOT/.cache/pip HF_HOME=$WORK_ROOT/.cache/huggingface TMPDIR=$WORK_ROOT/tmp
 mkdir -p "$PIP_CACHE_DIR" "$HF_HOME" "$TMPDIR" && cd "$WORK_ROOT"
 
