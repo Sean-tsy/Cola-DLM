@@ -15,10 +15,49 @@
 
 ---
 
+## 存储布局（重要：避开容量小的 home 盘）
+
+> 本服务器 **home 目录容量小**，另挂载两块数据盘 `data0` / `data1`（均已建好账号
+> `siyuan` 的目录）。**所有大体积产物（含 torch 的 venv、权重、results 产物、各类
+> 缓存）一律放数据盘，不要落在 home。** 约定 **data0 为工作主盘，data1 作备用 / 溢出**。
+
+| 用途 | 路径 | 盘 |
+| --- | --- | --- |
+| 工作主目录（代码 / venv / 权重 / results） | `/data0/siyuan` | data0 |
+| 备用 / 溢出（data0 写满时迁移目标） | `/data1/siyuan` | data1 |
+
+在**每个新 shell 会话开头**先设好工作根与缓存重定向（把 pip / HuggingFace / tmp
+缓存都赶到 data0，避免写满 home）：
+
+```bash
+export WORK_ROOT=/data0/siyuan        # 工作主盘
+export OVERFLOW_ROOT=/data1/siyuan    # 备用/溢出盘
+# 缓存与临时文件重定向到数据盘（关键：默认会写 $HOME 和 /tmp）
+export PIP_CACHE_DIR="$WORK_ROOT/.cache/pip"
+export HF_HOME="$WORK_ROOT/.cache/huggingface"
+export TMPDIR="$WORK_ROOT/tmp"
+mkdir -p "$PIP_CACHE_DIR" "$HF_HOME" "$TMPDIR"
+```
+
+> 代码仓克隆到 `$WORK_ROOT/Cola-DLM`，因此其下 `research/results/`、`hf_models/`
+> 等基于 `$PWD` 的路径**天然落在 data0**。若 data0 将满，把 `research/results/`
+> 或 `hf_models/` 迁到 `$OVERFLOW_ROOT` 并软链接回原位即可（见文末「磁盘溢出」）。
+
+---
+
 ## 环节〇 · 服务器环境从零搭建
 
 ```bash
-# 1) 取代码（HTTPS 或 SSH 二选一）
+# 0) 工作根与缓存重定向（见上「存储布局」，每个会话先执行）
+export WORK_ROOT=/data0/siyuan
+export OVERFLOW_ROOT=/data1/siyuan
+export PIP_CACHE_DIR="$WORK_ROOT/.cache/pip"
+export HF_HOME="$WORK_ROOT/.cache/huggingface"
+export TMPDIR="$WORK_ROOT/tmp"
+mkdir -p "$PIP_CACHE_DIR" "$HF_HOME" "$TMPDIR"
+
+# 1) 取代码到数据盘（HTTPS 或 SSH 二选一）—— 不要克隆到 home
+cd "$WORK_ROOT"
 git clone https://github.com/Sean-tsy/Cola-DLM.git
 cd Cola-DLM
 
@@ -28,7 +67,7 @@ git checkout research/diagnostics-scaffold
 EXPECTED_SHA="$(git rev-parse HEAD)"   # 或由本地告知的具体 SHA
 echo "server at ${EXPECTED_SHA}"
 
-# 3) 建立 GPU 运行环境（与本地纯 Python 测试环境相互独立）
+# 3) 建立 GPU 运行环境（venv 落在数据盘内的仓库目录，约数 GB，勿放 home）
 python -m venv .venv-gpu
 . .venv-gpu/bin/activate
 python -m pip install --upgrade pip
@@ -86,7 +125,8 @@ nvidia-smi
   stride 分片，见环节五），**不启用任何模型并行**。给定 8 卡，`NUM_GPUS=8`。
 - **CPU / 内存 / 磁盘**：数据物化、`prompt→question` 适配、验证器评测均为纯 CPU、
   内存友好；磁盘主要用于**权重**（DiT+VAE+tokenizer，按发布大小预留，建议 ≥50 GB
-  空间）与 `research/results/` 产物。
+  空间）与 `research/results/` 产物——二者均放 **data0**（`/data0/siyuan`），
+  **不要落 home**（home 容量小）；data0 不足时溢出到 data1（见「存储布局」）。
 - **结论**：**最低 1×A100-40GB 即可跑通全部诊断任务**；为缩短全量 sweep 墙钟时间，
   推荐用本节点的 **8×A100-40GB 做数据并行**。本手册多卡示例默认 `NUM_GPUS=8`，
   按实际可用卡数调整即可。
@@ -106,14 +146,19 @@ $EDITOR research/scripts/weights.sha256     # 填 cola_dit / cola_vae / tokenize
 WEIGHTS_URL="<weight-source>" bash research/scripts/fetch_weights.sh
 ```
 
-`fetch_weights.sh` 会把权重放到默认布局（对齐上游 `scripts/run_benchmark.sh`）：
+`fetch_weights.sh` 会把权重放到默认布局（对齐上游 `scripts/run_benchmark.sh`）。
+仓库已克隆在 `$WORK_ROOT/Cola-DLM`（data0），故 `hf_models/` **天然落在 data0**：
 
 ```
-hf_models/
+$WORK_ROOT/Cola-DLM/hf_models/   # = /data0/siyuan/Cola-DLM/hf_models
   cola_dlm/cola_dit/      # DiT 先验权重目录
   cola_dlm/cola_vae/      # VAE 权重目录
   tokenizer.json          # 分词器
 ```
+
+> 若要把权重独立于仓库另放数据盘（便于复用 / 避免随仓库迁移），可设
+> `WEIGHTS_DEST="$WORK_ROOT/hf_models"` 让 `fetch_weights.sh` 拉到该处，再用下方
+> `DIT_PATH/VAE_PATH/TOKENIZER_PATH` 指过去即可（权重已 gitignore，不入库）。
 
 并执行 `sha256sum -c research/scripts/weights.sha256`，**校验通过才算就绪**。
 脚本内的下载命令是骨架（`huggingface-cli download` / `aws s3 sync` 等），按你的
@@ -437,13 +482,38 @@ run_id；`checkpoint` 用 `${DIT_PATH}` / `${VAE_PATH}` / `${TOKENIZER_PATH}` �
 
 ---
 
+## 附：磁盘溢出（data0 将满时迁到 data1）
+
+home 盘小不用于产物；当**工作主盘 data0 将满**时，把大目录迁到备用盘 data1 并
+软链接回原位，命令与脚本无需改动：
+
+```bash
+# 例：把已归档结果迁到 data1，原位留软链
+mv "$WORK_ROOT/Cola-DLM/research/results" "$OVERFLOW_ROOT/results"
+ln -s "$OVERFLOW_ROOT/results" "$WORK_ROOT/Cola-DLM/research/results"
+
+# 例：把权重迁到 data1（或一开始就用 WEIGHTS_DEST 直接拉到 data1）
+mv "$WORK_ROOT/Cola-DLM/hf_models" "$OVERFLOW_ROOT/hf_models"
+ln -s "$OVERFLOW_ROOT/hf_models" "$WORK_ROOT/Cola-DLM/hf_models"
+
+df -h "$WORK_ROOT" "$OVERFLOW_ROOT"   # 随时核对两盘余量
+```
+
+---
+
 ## 附：一页速查（冒烟最短路径）
 
 ```bash
+# 0) 工作盘与缓存重定向（避开小 home 盘）
+export WORK_ROOT=/data0/siyuan OVERFLOW_ROOT=/data1/siyuan
+export PIP_CACHE_DIR=$WORK_ROOT/.cache/pip HF_HOME=$WORK_ROOT/.cache/huggingface TMPDIR=$WORK_ROOT/tmp
+mkdir -p "$PIP_CACHE_DIR" "$HF_HOME" "$TMPDIR" && cd "$WORK_ROOT"
+
+git clone https://github.com/Sean-tsy/Cola-DLM.git && cd Cola-DLM
 git checkout research/diagnostics-scaffold && EXPECTED_SHA=$(git rev-parse HEAD)
 python -m venv .venv-gpu && . .venv-gpu/bin/activate && pip install -r requirements.lock
 cp research/scripts/weights.sha256.example research/scripts/weights.sha256   # 填真实哈希
-WEIGHTS_URL=<src> bash research/scripts/fetch_weights.sh
+WEIGHTS_URL=<src> bash research/scripts/fetch_weights.sh                      # 落 data0/.../hf_models
 export DIT_PATH=$PWD/hf_models/cola_dlm/cola_dit VAE_PATH=$PWD/hf_models/cola_dlm/cola_vae TOKENIZER_PATH=$PWD/hf_models/tokenizer.json
 bash research/scripts/check_sync.sh "$EXPECTED_SHA"
 NUM_GPUS=1 EXPECTED_SHA="$EXPECTED_SHA" LAUNCHER=local \
