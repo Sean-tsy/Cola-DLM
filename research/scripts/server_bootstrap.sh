@@ -33,6 +33,11 @@ VENV="${VENV:-.venv-gpu}"
 TORCH_VERSION="${TORCH_VERSION:-2.11.0}"
 TORCH_INDEX="${TORCH_INDEX:-https://download.pytorch.org/whl/cu128}"
 PIP_INDEX="${PIP_INDEX:-https://pypi.org/simple}"
+# requirements.lock pins exact transitive versions; aliyun's PyPI mirror lags and
+# may miss a freshly-released pin (e.g. filelock==3.29.1). The Tsinghua (tuna)
+# mirror tracks PyPI closely, so use it for the lock install by default. Override
+# with REQ_INDEX if needed.
+REQ_INDEX="${REQ_INDEX:-https://pypi.tuna.tsinghua.edu.cn/simple/}"
 
 echo "[bootstrap] $(date -Is) repo=${REPO_DIR} venv=${VENV}"
 
@@ -64,7 +69,7 @@ fi
 #    filtered out so it does not clobber the cu128 GPU build just installed.
 echo "[bootstrap] installing requirements.lock (torch pin filtered)"
 grep -ivE '^torch==' requirements.lock > /tmp/cola_req.nolorch.txt
-pip install -r /tmp/cola_req.nolorch.txt -i "${PIP_INDEX}"
+pip install -r /tmp/cola_req.nolorch.txt -i "${REQ_INDEX}"
 
 # 3) Sanity: torch sees CUDA, key model deps import.
 python - <<'PY'
