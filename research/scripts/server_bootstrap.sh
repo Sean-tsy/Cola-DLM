@@ -44,8 +44,21 @@ source "${VENV}/bin/activate"
 python -m pip install --upgrade pip -i "${PIP_INDEX}"
 
 # 1) CUDA torch first (matching pinned version; cu128 index is reachable).
-echo "[bootstrap] installing torch==${TORCH_VERSION} from ${TORCH_INDEX}"
-pip install "torch==${TORCH_VERSION}" --index-url "${TORCH_INDEX}"
+# Fast path: if TORCH_WHEEL_URL is set, curl the wheel from a reachable mirror
+# (download.pytorch.org throttles to ~80KB/s from this host; the aliyun mirror
+# serves the same wheel at ~5MB/s) and install the local file. Otherwise install
+# from the cu128 simple index.
+if [[ -n "${TORCH_WHEEL_URL:-}" ]]; then
+  # pip validates wheel filenames, so keep the original (URL-decode %2B -> +).
+  WHEEL_NAME="$(basename "${TORCH_WHEEL_URL}" | sed 's/%2[bB]/+/g')"
+  echo "[bootstrap] curl torch wheel ${TORCH_WHEEL_URL} -> /tmp/${WHEEL_NAME}"
+  curl -fL --retry 3 -o "/tmp/${WHEEL_NAME}" "${TORCH_WHEEL_URL}"
+  pip install "/tmp/${WHEEL_NAME}"
+  rm -f "/tmp/${WHEEL_NAME}"
+else
+  echo "[bootstrap] installing torch==${TORCH_VERSION} from ${TORCH_INDEX}"
+  pip install "torch==${TORCH_VERSION}" --index-url "${TORCH_INDEX}"
+fi
 
 # 2) Everything else from the locked closure, with the exact torch==2.12.0 pin
 #    filtered out so it does not clobber the cu128 GPU build just installed.

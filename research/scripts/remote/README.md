@@ -16,13 +16,19 @@ Host cola-gpu
     IdentityFile ~/.ssh/id_ed25519
 ```
 
-之后所有脚本用 `REMOTE=cola-gpu` 引用该别名。
+之后所有脚本用 `REMOTE=cola-gpu` 引用该别名。本研究服务器已有别名 `cityu_tecent`
+（`siyuan@…`，免密已配好），直接 `export REMOTE=cityu_tecent` 即可。
+
+> **网络约束（重要）**：该服务器（腾讯云 · 中国）**无法访问 github.com / huggingface.co**
+> （GFW）。因此 `sync.sh` 用 **rsync over ssh** 传代码（不走服务器 `git fetch`），
+> 权重走 **`HF_ENDPOINT=https://hf-mirror.com`** 镜像，torch 走可达的
+> `download.pytorch.org/whl/cu128`。PyPI 可达。
 
 ## 四件套
 
 | 脚本 | 作用 | 用法 |
 | --- | --- | --- |
-| `sync.sh` | git push + 服务器 pull + **核对 commit 一致** | `REMOTE=cola-gpu bash research/scripts/remote/sync.sh [branch]` |
+| `sync.sh` | `git push`（本地→GitHub，备份）+ **rsync 工作树（含 .git）到服务器** + **核对 commit 一致** | `REMOTE=cola-gpu bash research/scripts/remote/sync.sh [branch]` |
 | `submit.sh` | **detached** 启动作业（命令秒回），日志 → `logs/<run_id>.log` | `REMOTE=cola-gpu bash research/scripts/remote/submit.sh <config> <run_id>` |
 | `status.sh` | tail 日志 + 判断 RUNNING/DONE/FAILED | `REMOTE=cola-gpu bash research/scripts/remote/status.sh <run_id> [tail]` |
 | `fetch.sh` | rsync 拉回 `results/<run_id>/` | `REMOTE=cola-gpu bash research/scripts/remote/fetch.sh <run_id>` |
