@@ -1,0 +1,32 @@
+{
+  "boundary_error_rate": null,
+  "by_depth": {},
+  "by_error_type": {
+    "mismatched": 693,
+    "unclosed": 14,
+    "unexpected_closing": 61
+  },
+  "by_length": {},
+  "by_pairing_distance": {},
+  "by_seed": {
+    "1234": {
+      "n": 256,
+      "valid_rate": 0.0
+    },
+    "2025": {
+      "n": 256,
+      "valid_rate": 0.0
+    },
+    "3407": {
+      "n": 256,
+      "valid_rate": 0.0
+    }
+  },
+  "mean_repair_distance": 29.154947916666668,
+  "mean_vae_nll_per_token": null,
+  "mean_vae_ppl": null,
+  "n": 768,
+  "valid_rate": 0.0,
+  "valid_rate_ci95_high": 0.0,
+  "valid_rate_ci95_low": 0.0
+}
