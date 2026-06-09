@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import sys
 
@@ -67,11 +68,13 @@ def main(argv: list[str] | None = None) -> int:
     for start in range(0, len(rows), args.batch_size):
         batch = rows[start : start + args.batch_size]
         ids_list = []
+        target_ids_list = []
         real_lens = []
         targets = []
         for rec in batch:
             text = _target_text(rec)
             ids = tokenizer.encode(text).ids
+            target_ids_list.append(ids)
             real_lens.append(len(ids))
             pad = (chunk - len(ids) % chunk) % chunk
             ids_list.append(torch.tensor(ids + [args.pad_token_id] * pad, dtype=torch.long, device=device))
@@ -84,14 +87,21 @@ def main(argv: list[str] | None = None) -> int:
             logits = vae.decode(latents, txt_shape=shape, txt_q_shape=shape)
 
         offset = 0
-        for rec, lat, real_len, target in zip(batch, enc.latents_list, real_lens, targets):
+        for rec, lat, real_len, target, target_ids in zip(batch, enc.latents_list, real_lens, targets, target_ids_list):
             n_tokens = lat.shape[0] * vae.patch_size
-            token_ids = logits[0, offset * vae.patch_size : offset * vae.patch_size + n_tokens].argmax(dim=-1)
-            token_ids = token_ids[:real_len].detach().cpu().tolist()
+            sample_logits = logits[0, offset * vae.patch_size : offset * vae.patch_size + n_tokens][:real_len]
+            token_ids = sample_logits.argmax(dim=-1).detach().cpu().tolist()
+            if target_ids:
+                target_tensor = torch.tensor(target_ids, dtype=torch.long, device=device)
+                nll = torch.nn.functional.cross_entropy(sample_logits.float(), target_tensor, reduction="mean").item()
+            else:
+                nll = 0.0
             out = dict(rec)
             out["generate"] = tokenizer.decode(token_ids)
             out["ground_truth"] = target
             out["model_family"] = "cola_vae_only"
+            out["vae_nll_per_token"] = nll
+            out["vae_ppl"] = math.exp(min(nll, 50.0))
             out_rows.append(out)
             offset += lat.shape[0]
 
