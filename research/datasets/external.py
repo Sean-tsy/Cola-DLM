@@ -38,16 +38,17 @@ def _first(row: dict[str, Any], names: tuple[str, ...], default: Any = "") -> An
 def dycklanguage_to_record(row: dict[str, Any], idx: int) -> dict[str, Any]:
     """Convert a lighteval/DyckLanguage-style row into an inference record."""
     prompt = str(_first(row, ("input", "prompt", "question", "text"), "Complete the Dyck sequence:"))
-    answer = str(_first(row, ("target", "answer", "label", "ground_truth"), ""))
+    answer = str(_first(row, ("output", "target", "answer", "label", "ground_truth"), ""))
     spaced_answer = space_delimit("".join(ch for ch in answer if ch in "()[]{}<>"))
     return {
         "id": _first(row, ("id", "idx", "unique_id"), idx),
-        "prompt": prompt,
+        "prompt": "Complete the following Dyck bracket prefix:\n" + prompt,
         "ground_truth": spaced_answer or answer,
         "meta": {
             "probe": "dyck",
             "source": "lighteval/DyckLanguage",
-            "mode": "benchmark",
+            "mode": "completion",
+            "prefix": prompt,
             "raw_row": row,
         },
     }

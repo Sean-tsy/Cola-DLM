@@ -6,7 +6,8 @@ seeds: [1234, 2025, 3407]
 
 data:
   source: dycklanguage
-  split: train
+  name: "2"
+  split: test
 
 sampling:
   block_size: 16

@@ -34,7 +34,9 @@ def test_bfcl_adapter_extracts_tool_registry():
 
 
 def test_dycklanguage_adapter_space_delimits_ground_truth():
-    row = {"id": 7, "input": "Complete:", "target": "(()())"}
+    row = {"id": 7, "input": "[ [ ]", "output": " ]"}
     rec = dycklanguage_to_record(row, 0)
     assert rec["id"] == 7
-    assert rec["ground_truth"] == "( ( ) ( ) )"
+    assert rec["ground_truth"] == "]"
+    assert rec["meta"]["mode"] == "completion"
+    assert rec["meta"]["prefix"] == "[ [ ]"
