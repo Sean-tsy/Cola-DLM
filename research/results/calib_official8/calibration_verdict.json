@@ -1,0 +1,68 @@
+{
+  "tasks": {
+    "hellaswag": {
+      "abs_delta": 0.3000000000000007,
+      "measured": 11.0,
+      "reference": 10.7,
+      "status": "PASS",
+      "tolerance": 3.0
+    },
+    "lambada": {
+      "abs_delta": 0.10000000000000142,
+      "measured": 50.9,
+      "reference": 50.8,
+      "status": "PASS",
+      "tolerance": 3.0
+    },
+    "mmlu": {
+      "abs_delta": 0.1999999999999993,
+      "measured": 19.5,
+      "reference": 19.3,
+      "status": "PASS",
+      "tolerance": 3.0
+    },
+    "obqa": {
+      "abs_delta": 0.0,
+      "measured": 23.0,
+      "reference": 23.0,
+      "status": "PASS",
+      "tolerance": 3.0
+    },
+    "race": {
+      "abs_delta": 0.3999999999999986,
+      "measured": 20.0,
+      "reference": 19.6,
+      "status": "PASS",
+      "tolerance": 3.0
+    },
+    "siqa": {
+      "abs_delta": 0.3000000000000007,
+      "measured": 29.2,
+      "reference": 28.9,
+      "status": "PASS",
+      "tolerance": 3.0
+    },
+    "squad": {
+      "abs_delta": 0.5999999999999979,
+      "measured": 30.3,
+      "reference": 30.9,
+      "status": "PASS",
+      "tolerance": 3.0
+    },
+    "story_cloze": {
+      "abs_delta": 0.0,
+      "measured": 30.77,
+      "reference": 30.77,
+      "status": "PASS",
+      "tolerance": 3.0
+    },
+    "tasks_average": {
+      "abs_delta": 0.0799999999999983,
+      "measured": 26.83,
+      "reference": 26.75,
+      "status": "PASS",
+      "tolerance": 3.0
+    }
+  },
+  "verdict": "PASS"
+}

@@ -97,3 +97,59 @@ with open(verdict_path, "w", encoding="utf-8") as fh:
 print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
 sys.exit(0 if ok else 2)
 PY
+
+python - "${RUN_ID}" "${BASE}" "${TASKS}" <<'PY'
+import json
+import os
+import subprocess
+import sys
+from datetime import datetime, timezone
+
+run_id, base, tasks = sys.argv[1:4]
+
+
+def git_sha():
+    return subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+
+
+def read_weights():
+    path = "research/scripts/weights.sha256"
+    if not os.path.exists(path):
+        return {}
+    out = {}
+    with open(path, encoding="utf-8") as fh:
+        for line in fh:
+            parts = line.strip().split()
+            if len(parts) >= 2:
+                out[parts[1]] = parts[0]
+    return out
+
+
+with open(os.path.join(base, "calibration_verdict.json"), encoding="utf-8") as fh:
+    verdict = json.load(fh)
+
+manifest = {
+    "run_id": run_id,
+    "phase": "9.2-full-official-calibration",
+    "created_at": datetime.now(timezone.utc).isoformat(),
+    "git_sha": git_sha(),
+    "server": "cityu_tecent",
+    "tasks": tasks.split(),
+    "input_reconstruction": "research.scripts.prep_calibration from committed eval_output/tasks_default/*.jsonl",
+    "harness": "scripts/run_benchmark.sh (upstream, unchanged)",
+    "settings": {
+        "timestep_num": int(os.environ.get("TIMESTEP_NUM", 16)),
+        "guidance_scale": float(os.environ.get("GUIDANCE_SCALE", 7.0)),
+        "temperature": float(os.environ.get("TEMPERATURE", 0.0)),
+        "max_new_tokens": int(os.environ.get("MAX_NEW_TOKENS", 32)),
+        "max_samples": int(os.environ.get("MAX_SAMPLES", 1000)),
+        "num_gpus": int(os.environ.get("NUM_GPUS", 8)),
+        "per_sample_noise_seed": int(os.environ.get("COLA_INFER_PER_SAMPLE_NOISE_SEED", 66)),
+    },
+    "weights_sha256": read_weights(),
+    "result": verdict,
+}
+with open(os.path.join(base, "manifest.json"), "w", encoding="utf-8") as fh:
+    json.dump(manifest, fh, ensure_ascii=False, indent=2, sort_keys=True)
+print(f"[run_calibration_full] manifest -> {base}/manifest.json")
+PY

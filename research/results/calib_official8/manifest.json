@@ -1,0 +1,102 @@
+{
+  "created_at": "2026-06-09T15:48:00+00:00",
+  "git_sha": "6965743b7991db4765b16bc104731f9ac88711e6",
+  "harness": "scripts/run_benchmark.sh (upstream, unchanged)",
+  "input_reconstruction": "research.scripts.prep_calibration from committed eval_output/tasks_default/*.jsonl",
+  "phase": "9.2-full-official-calibration",
+  "result": {
+    "tasks": {
+      "hellaswag": {
+        "abs_delta": 0.3000000000000007,
+        "measured": 11.0,
+        "reference": 10.7,
+        "status": "PASS",
+        "tolerance": 3.0
+      },
+      "lambada": {
+        "abs_delta": 0.10000000000000142,
+        "measured": 50.9,
+        "reference": 50.8,
+        "status": "PASS",
+        "tolerance": 3.0
+      },
+      "mmlu": {
+        "abs_delta": 0.1999999999999993,
+        "measured": 19.5,
+        "reference": 19.3,
+        "status": "PASS",
+        "tolerance": 3.0
+      },
+      "obqa": {
+        "abs_delta": 0.0,
+        "measured": 23.0,
+        "reference": 23.0,
+        "status": "PASS",
+        "tolerance": 3.0
+      },
+      "race": {
+        "abs_delta": 0.3999999999999986,
+        "measured": 20.0,
+        "reference": 19.6,
+        "status": "PASS",
+        "tolerance": 3.0
+      },
+      "siqa": {
+        "abs_delta": 0.3000000000000007,
+        "measured": 29.2,
+        "reference": 28.9,
+        "status": "PASS",
+        "tolerance": 3.0
+      },
+      "squad": {
+        "abs_delta": 0.5999999999999979,
+        "measured": 30.3,
+        "reference": 30.9,
+        "status": "PASS",
+        "tolerance": 3.0
+      },
+      "story_cloze": {
+        "abs_delta": 0.0,
+        "measured": 30.77,
+        "reference": 30.77,
+        "status": "PASS",
+        "tolerance": 3.0
+      },
+      "tasks_average": {
+        "abs_delta": 0.0799999999999983,
+        "measured": 26.83,
+        "reference": 26.75,
+        "status": "PASS",
+        "tolerance": 3.0
+      }
+    },
+    "verdict": "PASS"
+  },
+  "run_id": "calib_official8",
+  "server": "cityu_tecent",
+  "settings": {
+    "guidance_scale": 7.0,
+    "max_new_tokens": 32,
+    "max_samples": 1000,
+    "num_gpus": 8,
+    "per_sample_noise_seed": 66,
+    "temperature": 0.0,
+    "timestep_num": 16
+  },
+  "tasks": [
+    "lambada",
+    "obqa",
+    "hellaswag",
+    "mmlu",
+    "race",
+    "siqa",
+    "squad",
+    "story_cloze"
+  ],
+  "weights_sha256": {
+    "cola_dit/model-00001-of-00002.safetensors": "8e4f4f2823d47553db823036cb80c5c5fec3f1a8769f17b4c2904f69b1bfe94e",
+    "cola_dit/model-00002-of-00002.safetensors": "fa0ceadba148ab3d13b89ae6c6906db2ece5884784839fb5433dcdb8354f955f",
+    "cola_vae/model.safetensors": "2b27cf0a73ecf687d37c28d45881117960979436ed6ec908abd44330b23e991c",
+    "tokenizer.json": "3ca996cca8afea58b34e95c353e859333592642a5e51d695d7a6dbbaf692dfe9"
+  }
+}

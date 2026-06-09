@@ -1,0 +1,10 @@
+task,calib_official8
+lambada,50.90
+mmlu,19.50
+obqa,23.00
+hellaswag,11.00
+race,20.00
+siqa,29.20
+squad,30.30
+story_cloze,30.77
+tasks_average,26.83
