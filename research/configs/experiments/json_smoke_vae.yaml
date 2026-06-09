@@ -1,0 +1,22 @@
+# env节九 9.2/9.4 · H4/H5 spot check: VAE-only JSON smoke reconstruction.
+run_id: json_smoke_vae
+task: structured
+n_samples: 16
+seeds: [1234]
+
+data:
+  fmt: json
+  max_depth: 1
+  max_props: 2
+
+sampling:
+  block_size: 4
+  timestep_num: 16
+  guidance_scale: 7.0
+  max_new_tokens: 64
+  temperature: 0.0
+  trace: false
+
+checkpoint:
+  vae: ${VAE_PATH}
+  tokenizer: ${TOKENIZER_PATH}

@@ -1,0 +1,105 @@
+{
+  "boundary_error_rate": null,
+  "by_depth": {
+    "3": {
+      "n": 1,
+      "valid_rate": 1.0
+    },
+    "4": {
+      "n": 4,
+      "valid_rate": 1.0
+    },
+    "5": {
+      "n": 13,
+      "valid_rate": 1.0
+    },
+    "6": {
+      "n": 18,
+      "valid_rate": 0.9444444444444444
+    },
+    "7": {
+      "n": 18,
+      "valid_rate": 1.0
+    },
+    "8": {
+      "n": 74,
+      "valid_rate": 0.9324324324324325
+    }
+  },
+  "by_error_type": {
+    "none": 122,
+    "unclosed": 5,
+    "unexpected_closing": 1
+  },
+  "by_length": {
+    "32": {
+      "n": 128,
+      "valid_rate": 0.953125
+    }
+  },
+  "by_pairing_distance": {
+    "11": {
+      "n": 4,
+      "valid_rate": 1.0
+    },
+    "13": {
+      "n": 2,
+      "valid_rate": 1.0
+    },
+    "15": {
+      "n": 3,
+      "valid_rate": 1.0
+    },
+    "17": {
+      "n": 4,
+      "valid_rate": 1.0
+    },
+    "19": {
+      "n": 5,
+      "valid_rate": 0.8
+    },
+    "21": {
+      "n": 4,
+      "valid_rate": 1.0
+    },
+    "23": {
+      "n": 7,
+      "valid_rate": 1.0
+    },
+    "25": {
+      "n": 15,
+      "valid_rate": 1.0
+    },
+    "27": {
+      "n": 24,
+      "valid_rate": 0.9166666666666666
+    },
+    "29": {
+      "n": 16,
+      "valid_rate": 1.0
+    },
+    "31": {
+      "n": 43,
+      "valid_rate": 0.9302325581395349
+    },
+    "7": {
+      "n": 1,
+      "valid_rate": 1.0
+    }
+  },
+  "by_seed": {
+    "1234": {
+      "n": 64,
+      "valid_rate": 0.9375
+    },
+    "2025": {
+      "n": 64,
+      "valid_rate": 0.96875
+    }
+  },
+  "mean_repair_distance": 0.046875,
+  "n": 128,
+  "valid_rate": 0.953125,
+  "valid_rate_ci95_high": 0.984375,
+  "valid_rate_ci95_low": 0.9140625
+}
