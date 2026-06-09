@@ -71,5 +71,5 @@ for SEED in ${SEEDS}; do
 done
 
 # 3) Evaluate structural consistency over the produced samples + traces (CPU).
-#    (research/eval is populated in a later phase; metrics land in ${BASE}/metrics.)
-echo "[run_experiment] done; samples + traces under ${BASE}"
+python -m research.scripts.eval_experiment "${CONFIG}" --results-root "${RESULTS_ROOT}"
+echo "[run_experiment] done; archive under ${BASE}"

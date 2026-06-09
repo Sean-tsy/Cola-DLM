@@ -124,6 +124,11 @@ def test_tool_call_rejects_data() -> None:
         ExperimentConfig(run_id="t", task="tool_call", seeds=[1], data={"x": 1})
 
 
+def test_tool_call_accepts_external_source_data() -> None:
+    cfg = ExperimentConfig(run_id="t", task="tool_call", seeds=[1], data={"source": "bfcl", "split": "train"})
+    assert cfg.data["source"] == "bfcl"
+
+
 def test_from_dict_rejects_unknown_keys() -> None:
     with pytest.raises(ValueError):
         ExperimentConfig.from_dict({"run_id": "x", "task": "dyck", "seeds": [1], "bogus": 1})

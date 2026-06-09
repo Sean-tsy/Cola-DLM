@@ -33,7 +33,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 # Mapping ``closing -> opening`` for the bracket alphabet. Generalized Dyck-k.
-DEFAULT_PAIRS: dict[str, str] = {")": "(", "]": "[", "}": "{"}
+DEFAULT_PAIRS: dict[str, str] = {")": "(", "]": "[", "}": "{", ">": "<"}
 
 
 class BracketErrorType(str, Enum):

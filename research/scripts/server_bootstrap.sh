@@ -78,13 +78,20 @@ pip install -r /tmp/cola_req.nolorch.txt -i "${REQ_INDEX}"
 echo "[bootstrap] installing requirements-test.txt (research runtime deps)"
 pip install -r requirements-test.txt -i "${REQ_INDEX}"
 
+# 2c) Server-only dataset ingestion for published benchmarks (DyckLanguage,
+#     JSONSchemaBench, BFCL). Keep this out of requirements-test.txt so the
+#     local environment remains minimal and network-free.
+echo "[bootstrap] installing datasets (server benchmark ingestion)"
+pip install "datasets==4.4.2" -i "${REQ_INDEX}"
+
 # 3) Sanity: torch sees CUDA, key model deps import.
 python - <<'PY'
-import torch, transformers, tokenizers, huggingface_hub
+import datasets, torch, transformers, tokenizers, huggingface_hub
 print("[bootstrap] torch", torch.__version__, "cuda", torch.cuda.is_available(),
       "device_count", torch.cuda.device_count())
 print("[bootstrap] transformers", transformers.__version__,
-      "tokenizers", tokenizers.__version__, "hub", huggingface_hub.__version__)
+      "tokenizers", tokenizers.__version__, "hub", huggingface_hub.__version__,
+      "datasets", datasets.__version__)
 PY
 
 echo "[bootstrap] DONE $(date -Is)"

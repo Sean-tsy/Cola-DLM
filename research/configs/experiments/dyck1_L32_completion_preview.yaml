@@ -1,0 +1,24 @@
+# env节九 9.2 · H1/H4 预览：Dyck-1 L=32 条件补全口径。
+run_id: dyck1_L32_completion_preview
+task: dyck
+n_samples: 64
+seeds: [1234, 2025]
+
+data:
+  length: 32
+  max_depth: 8
+  k: 1
+  mode: completion
+
+sampling:
+  block_size: 4
+  timestep_num: 16
+  guidance_scale: 7.0
+  max_new_tokens: 48
+  temperature: 0.0
+  trace: true
+
+checkpoint:
+  dit: ${DIT_PATH}
+  vae: ${VAE_PATH}
+  tokenizer: ${TOKENIZER_PATH}

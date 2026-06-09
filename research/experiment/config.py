@@ -92,8 +92,8 @@ class ExperimentConfig:
             raise ValueError("seeds must be non-negative integers")
         if self.n_samples < 1:
             raise ValueError("n_samples must be >= 1")
-        if self.task == TASK_TOOL_CALL and self.data:
-            raise ValueError("tool_call task takes no data knobs")
+        if self.task == TASK_TOOL_CALL and self.data and "source" not in self.data:
+            raise ValueError("tool_call task only accepts external-source data knobs")
         # Validate sampling/model knobs by constructing a probe SweepConfig.
         self.sweep_for(self.seeds[0])
 
@@ -129,14 +129,44 @@ class ExperimentConfig:
         ``ground_truth`` / ``meta``). Same ``(config, seed)`` -> identical data.
         """
         if self.task == TASK_DYCK:
+            if self.data.get("source") == "dycklanguage":
+                from research.datasets.external import load_hf_records
+
+                return load_hf_records(
+                    "lighteval/DyckLanguage",
+                    source="dycklanguage",
+                    name=self.data.get("name"),
+                    split=self.data.get("split", "train"),
+                    limit=self.n_samples,
+                )
             from research.data_gen.dyck import generate_dyck
 
             samples = generate_dyck(self.n_samples, seed, **self.data)
         elif self.task == TASK_STRUCTURED:
+            if self.data.get("source") == "jsonschemabench":
+                from research.datasets.external import load_hf_records
+
+                return load_hf_records(
+                    "epfl-dlab/JSONSchemaBench",
+                    source="jsonschemabench",
+                    name=self.data.get("name", "default"),
+                    split=self.data.get("split", "train"),
+                    limit=self.n_samples,
+                )
             from research.data_gen.structured import generate_structured
 
             samples = generate_structured(self.n_samples, seed, **self.data)
         else:  # TASK_TOOL_CALL
+            if self.data.get("source") == "bfcl":
+                from research.datasets.external import load_hf_records
+
+                return load_hf_records(
+                    "gorilla-llm/Berkeley-Function-Calling-Leaderboard",
+                    source="bfcl",
+                    name=self.data.get("name"),
+                    split=self.data.get("split", "train"),
+                    limit=self.n_samples,
+                )
             from research.data_gen.tool_call import generate_tool_calls
 
             samples = generate_tool_calls(self.n_samples, seed)

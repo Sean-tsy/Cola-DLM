@@ -1,0 +1,22 @@
+# env节九 9.3 · L0 published Dyck benchmark (lighteval/DyckLanguage).
+run_id: dycklanguage_cola
+task: dyck
+n_samples: 256
+seeds: [1234, 2025, 3407]
+
+data:
+  source: dycklanguage
+  split: train
+
+sampling:
+  block_size: 16
+  timestep_num: 16
+  guidance_scale: 7.0
+  max_new_tokens: 96
+  temperature: 0.0
+  trace: true
+
+checkpoint:
+  dit: ${DIT_PATH}
+  vae: ${VAE_PATH}
+  tokenizer: ${TOKENIZER_PATH}

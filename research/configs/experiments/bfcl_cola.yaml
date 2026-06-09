@@ -1,0 +1,22 @@
+# env节九 9.5 · L2 BFCL tool-call format baseline (server HF dataset ingestion).
+run_id: bfcl_cola
+task: tool_call
+n_samples: 512
+seeds: [1234, 2025, 3407]
+
+data:
+  source: bfcl
+  split: train
+
+sampling:
+  block_size: 16
+  timestep_num: 16
+  guidance_scale: 7.0
+  max_new_tokens: 256
+  temperature: 0.0
+  trace: true
+
+checkpoint:
+  dit: ${DIT_PATH}
+  vae: ${VAE_PATH}
+  tokenizer: ${TOKENIZER_PATH}

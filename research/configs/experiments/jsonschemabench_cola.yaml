@@ -1,0 +1,23 @@
+# env节九 9.5 · L1 JSONSchemaBench baseline (server HF dataset ingestion).
+run_id: jsonschemabench_cola
+task: structured
+n_samples: 512
+seeds: [1234, 2025, 3407]
+
+data:
+  source: jsonschemabench
+  name: default
+  split: train
+
+sampling:
+  block_size: 16
+  timestep_num: 16
+  guidance_scale: 7.0
+  max_new_tokens: 256
+  temperature: 0.0
+  trace: true
+
+checkpoint:
+  dit: ${DIT_PATH}
+  vae: ${VAE_PATH}
+  tokenizer: ${TOKENIZER_PATH}
