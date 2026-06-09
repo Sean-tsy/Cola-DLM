@@ -37,6 +37,8 @@ class EvalRecord:
     length: int | None = None
     max_depth: int | None = None
     max_pairing_distance: int | None = None
+    vae_nll_per_token: float | None = None
+    vae_ppl: float | None = None
     block_index: int | None = None
     on_boundary: bool | None = None
 
@@ -53,6 +55,8 @@ class EvalRecord:
             "length": self.length,
             "max_depth": self.max_depth,
             "max_pairing_distance": self.max_pairing_distance,
+            "vae_nll_per_token": self.vae_nll_per_token,
+            "vae_ppl": self.vae_ppl,
             "block_index": self.block_index,
             "on_boundary": self.on_boundary,
         }
@@ -120,6 +124,8 @@ def evaluate_pair(
             length=meta.get("length"),
             max_depth=meta.get("max_depth"),
             max_pairing_distance=meta.get("max_pairing_distance"),
+            vae_nll_per_token=sample.get("vae_nll_per_token"),
+            vae_ppl=sample.get("vae_ppl"),
             block_index=(trace_location or {}).get("block_index"),
             on_boundary=(trace_location or {}).get("on_boundary"),
         )
@@ -135,6 +141,8 @@ def evaluate_pair(
             score=1.0 if result.status is JsonStatus.VALID else 0.0,
             error_type=result.status.value,
             error_position=result.error_position,
+            vae_nll_per_token=sample.get("vae_nll_per_token"),
+            vae_ppl=sample.get("vae_ppl"),
         )
 
     if task == "tool_call":
@@ -147,6 +155,8 @@ def evaluate_pair(
             valid=result.status is ToolCallStatus.VALID,
             score=1.0 if result.status is ToolCallStatus.VALID else 0.0,
             error_type=result.status.value,
+            vae_nll_per_token=sample.get("vae_nll_per_token"),
+            vae_ppl=sample.get("vae_ppl"),
         )
 
     raise ValueError(f"unsupported eval task: {task}")
@@ -173,6 +183,8 @@ def summarize(rows: list[EvalRecord]) -> dict[str, Any]:
     scores = [r.score for r in rows]
     ci_lo, ci_hi = bootstrap_mean_ci(scores)
     distances = [r.repair_distance for r in rows if r.repair_distance is not None]
+    nlls = [r.vae_nll_per_token for r in rows if r.vae_nll_per_token is not None]
+    ppls = [r.vae_ppl for r in rows if r.vae_ppl is not None]
     boundary_rows = [r for r in rows if r.on_boundary is not None]
     return {
         "n": len(rows),
@@ -180,6 +192,8 @@ def summarize(rows: list[EvalRecord]) -> dict[str, Any]:
         "valid_rate_ci95_low": ci_lo,
         "valid_rate_ci95_high": ci_hi,
         "mean_repair_distance": mean(distances) if distances else None,
+        "mean_vae_nll_per_token": mean(nlls) if nlls else None,
+        "mean_vae_ppl": mean(ppls) if ppls else None,
         "boundary_error_rate": mean(1.0 if r.on_boundary else 0.0 for r in boundary_rows) if boundary_rows else None,
         "by_error_type": _count_by(rows, "error_type"),
         "by_seed": _group_mean(rows, "seed"),
