@@ -33,9 +33,11 @@ if [[ "${HEAD_SHA:0:${LEN}}" != "${EXPECTED_SHA}" ]]; then
   exit 1
 fi
 
-if [[ -n "$(git status --porcelain)" ]]; then
+DIRTY="$(git status --porcelain -- ':!/.venv-gpu' ':!/hf_models' ':!/logs' ':!/research/results/*/data' \
+  ':!/research/results/*/samples' ':!/research/results/*/traces' ':!/research/results/*/logs')"
+if [[ -n "${DIRTY}" ]]; then
   echo "[check_sync] WARNING: working tree is dirty; commit/stash for a clean run." >&2
-  git status --short >&2
+  echo "${DIRTY}" >&2
   exit 1
 fi
 
