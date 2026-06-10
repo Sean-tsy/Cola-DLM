@@ -1,0 +1,164 @@
+{
+  "boundary_error_rate": null,
+  "by_depth": {
+    "4": {
+      "n": 2,
+      "valid_rate": 0.0
+    },
+    "5": {
+      "n": 6,
+      "valid_rate": 0.0
+    },
+    "6": {
+      "n": 23,
+      "valid_rate": 0.043478260869565216
+    },
+    "7": {
+      "n": 26,
+      "valid_rate": 0.0
+    },
+    "8": {
+      "n": 711,
+      "valid_rate": 0.011251758087201125
+    }
+  },
+  "by_error_type": {
+    "mismatched": 9,
+    "none": 9,
+    "unclosed": 690,
+    "unexpected_closing": 60
+  },
+  "by_length": {
+    "64": {
+      "n": 768,
+      "valid_rate": 0.01171875
+    }
+  },
+  "by_pairing_distance": {
+    "13": {
+      "n": 1,
+      "valid_rate": 0.0
+    },
+    "15": {
+      "n": 1,
+      "valid_rate": 0.0
+    },
+    "17": {
+      "n": 2,
+      "valid_rate": 0.5
+    },
+    "19": {
+      "n": 1,
+      "valid_rate": 0.0
+    },
+    "21": {
+      "n": 3,
+      "valid_rate": 0.0
+    },
+    "23": {
+      "n": 3,
+      "valid_rate": 0.0
+    },
+    "25": {
+      "n": 9,
+      "valid_rate": 0.0
+    },
+    "27": {
+      "n": 9,
+      "valid_rate": 0.0
+    },
+    "29": {
+      "n": 19,
+      "valid_rate": 0.0
+    },
+    "31": {
+      "n": 18,
+      "valid_rate": 0.0
+    },
+    "33": {
+      "n": 15,
+      "valid_rate": 0.0
+    },
+    "35": {
+      "n": 12,
+      "valid_rate": 0.0
+    },
+    "37": {
+      "n": 19,
+      "valid_rate": 0.0
+    },
+    "39": {
+      "n": 13,
+      "valid_rate": 0.0
+    },
+    "41": {
+      "n": 18,
+      "valid_rate": 0.0
+    },
+    "43": {
+      "n": 12,
+      "valid_rate": 0.0
+    },
+    "45": {
+      "n": 17,
+      "valid_rate": 0.0
+    },
+    "47": {
+      "n": 27,
+      "valid_rate": 0.037037037037037035
+    },
+    "49": {
+      "n": 21,
+      "valid_rate": 0.0
+    },
+    "51": {
+      "n": 36,
+      "valid_rate": 0.0
+    },
+    "53": {
+      "n": 33,
+      "valid_rate": 0.030303030303030304
+    },
+    "55": {
+      "n": 33,
+      "valid_rate": 0.0
+    },
+    "57": {
+      "n": 58,
+      "valid_rate": 0.034482758620689655
+    },
+    "59": {
+      "n": 59,
+      "valid_rate": 0.03389830508474576
+    },
+    "61": {
+      "n": 95,
+      "valid_rate": 0.0
+    },
+    "63": {
+      "n": 234,
+      "valid_rate": 0.008547008547008548
+    }
+  },
+  "by_seed": {
+    "1234": {
+      "n": 256,
+      "valid_rate": 0.01171875
+    },
+    "2025": {
+      "n": 256,
+      "valid_rate": 0.015625
+    },
+    "3407": {
+      "n": 256,
+      "valid_rate": 0.0078125
+    }
+  },
+  "mean_repair_distance": 22.03125,
+  "mean_vae_nll_per_token": null,
+  "mean_vae_ppl": null,
+  "n": 768,
+  "valid_rate": 0.01171875,
+  "valid_rate_ci95_high": 0.01953125,
+  "valid_rate_ci95_low": 0.005208333333333333
+}
