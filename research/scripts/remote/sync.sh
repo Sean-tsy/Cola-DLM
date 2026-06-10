@@ -45,7 +45,8 @@ ${RSYNC} --delete \
   --exclude='.venv/' --exclude='.venv-gpu/' \
   --exclude='hf_models/' --exclude='logs/' \
   --exclude="${RESULTS_ROOT}/*/data/" --exclude="${RESULTS_ROOT}/*/samples/" \
-  --exclude="${RESULTS_ROOT}/*/traces/" \
+  --exclude="${RESULTS_ROOT}/*/traces/" --exclude="${RESULTS_ROOT}/*/logs/" \
+  --exclude="${RESULTS_ROOT}/*/metrics/" --exclude="${RESULTS_ROOT}/*/manifest.json" \
   --exclude='__pycache__/' --exclude='*.pyc' \
   --exclude='.pytest_cache/' --exclude='.ruff_cache/' \
   -e "${SSH}" "${REPO_ROOT}/" "${REMOTE}:${REMOTE_REPO}/"
