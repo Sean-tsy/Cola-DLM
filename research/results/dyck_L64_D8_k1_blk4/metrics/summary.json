@@ -1,5 +1,5 @@
 {
-  "boundary_error_rate": 0.06510416666666667,
+  "boundary_error_rate": 0.2721354166666667,
   "by_depth": {
     "4": {
       "n": 2,
@@ -11,7 +11,7 @@
     },
     "6": {
       "n": 23,
-      "valid_rate": 0.08695652173913043
+      "valid_rate": 0.0
     },
     "7": {
       "n": 26,
@@ -19,19 +19,19 @@
     },
     "8": {
       "n": 711,
-      "valid_rate": 0.007032348804500703
+      "valid_rate": 0.005625879043600563
     }
   },
   "by_error_type": {
-    "mismatched": 3,
-    "none": 7,
-    "unclosed": 625,
-    "unexpected_closing": 133
+    "mismatched": 69,
+    "none": 4,
+    "unclosed": 452,
+    "unexpected_closing": 243
   },
   "by_length": {
     "64": {
       "n": 768,
-      "valid_rate": 0.009114583333333334
+      "valid_rate": 0.005208333333333333
     }
   },
   "by_pairing_distance": {
@@ -45,7 +45,7 @@
     },
     "17": {
       "n": 2,
-      "valid_rate": 0.5
+      "valid_rate": 0.0
     },
     "19": {
       "n": 1,
@@ -57,7 +57,7 @@
     },
     "23": {
       "n": 3,
-      "valid_rate": 0.3333333333333333
+      "valid_rate": 0.0
     },
     "25": {
       "n": 9,
@@ -65,7 +65,7 @@
     },
     "27": {
       "n": 9,
-      "valid_rate": 0.1111111111111111
+      "valid_rate": 0.0
     },
     "29": {
       "n": 19,
@@ -129,7 +129,7 @@
     },
     "59": {
       "n": 59,
-      "valid_rate": 0.03389830508474576
+      "valid_rate": 0.0
     },
     "61": {
       "n": 95,
@@ -137,13 +137,13 @@
     },
     "63": {
       "n": 234,
-      "valid_rate": 0.008547008547008548
+      "valid_rate": 0.017094017094017096
     }
   },
   "by_seed": {
     "1234": {
       "n": 256,
-      "valid_rate": 0.01953125
+      "valid_rate": 0.00390625
     },
     "2025": {
       "n": 256,
@@ -151,14 +151,14 @@
     },
     "3407": {
       "n": 256,
-      "valid_rate": 0.0
+      "valid_rate": 0.00390625
     }
   },
-  "mean_repair_distance": 29.139322916666668,
+  "mean_repair_distance": 20.587239583333332,
   "mean_vae_nll_per_token": null,
   "mean_vae_ppl": null,
   "n": 768,
-  "valid_rate": 0.009114583333333334,
-  "valid_rate_ci95_high": 0.016927083333333332,
-  "valid_rate_ci95_low": 0.0026041666666666665
+  "valid_rate": 0.005208333333333333,
+  "valid_rate_ci95_high": 0.010416666666666666,
+  "valid_rate_ci95_low": 0.0013020833333333333
 }

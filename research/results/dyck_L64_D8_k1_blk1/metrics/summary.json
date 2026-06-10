@@ -1,5 +1,5 @@
 {
-  "boundary_error_rate": null,
+  "boundary_error_rate": 0.9049479166666666,
   "by_depth": {
     "4": {
       "n": 2,

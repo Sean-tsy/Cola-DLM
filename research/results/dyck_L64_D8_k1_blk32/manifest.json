@@ -12,15 +12,15 @@
       "mode": "completion"
     },
     "n_samples": 256,
-    "run_id": "dyck_L64_D8_k1_ode32",
+    "run_id": "dyck_L64_D8_k1_blk32",
     "sampling": {
-      "block_size": 16,
+      "block_size": 32,
       "guidance_scale": 7.0,
       "max_new_tokens": 96,
       "patch_size": null,
       "repetition_penalty": 1.1,
       "temperature": 0.0,
-      "timestep_num": 32,
+      "timestep_num": 16,
       "top_k": 50,
       "top_p": 0.9,
       "trace": true
@@ -32,7 +32,7 @@
     ],
     "task": "dyck"
   },
-  "created_at": "2026-06-10T05:59:51.337490+00:00",
+  "created_at": "2026-06-10T05:13:06.637489+00:00",
   "git_sha": "8813e370fa0f45a2eeefdccbef2689355b57b909",
-  "run_id": "dyck_L64_D8_k1_ode32"
+  "run_id": "dyck_L64_D8_k1_blk32"
 }

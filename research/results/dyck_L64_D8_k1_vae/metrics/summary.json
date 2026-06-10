@@ -1,5 +1,5 @@
 {
-  "boundary_error_rate": 0.06510416666666667,
+  "boundary_error_rate": null,
   "by_depth": {
     "4": {
       "n": 2,
@@ -15,23 +15,22 @@
     },
     "7": {
       "n": 26,
-      "valid_rate": 0.0
+      "valid_rate": 0.07692307692307693
     },
     "8": {
       "n": 711,
-      "valid_rate": 0.007032348804500703
+      "valid_rate": 0.026722925457102673
     }
   },
   "by_error_type": {
-    "mismatched": 3,
-    "none": 7,
-    "unclosed": 625,
-    "unexpected_closing": 133
+    "none": 23,
+    "unclosed": 704,
+    "unexpected_closing": 41
   },
   "by_length": {
     "64": {
       "n": 768,
-      "valid_rate": 0.009114583333333334
+      "valid_rate": 0.029947916666666668
     }
   },
   "by_pairing_distance": {
@@ -45,7 +44,7 @@
     },
     "17": {
       "n": 2,
-      "valid_rate": 0.5
+      "valid_rate": 0.0
     },
     "19": {
       "n": 1,
@@ -57,23 +56,23 @@
     },
     "23": {
       "n": 3,
-      "valid_rate": 0.3333333333333333
+      "valid_rate": 0.0
     },
     "25": {
       "n": 9,
-      "valid_rate": 0.0
+      "valid_rate": 0.1111111111111111
     },
     "27": {
       "n": 9,
-      "valid_rate": 0.1111111111111111
+      "valid_rate": 0.0
     },
     "29": {
       "n": 19,
-      "valid_rate": 0.0
+      "valid_rate": 0.10526315789473684
     },
     "31": {
       "n": 18,
-      "valid_rate": 0.0
+      "valid_rate": 0.1111111111111111
     },
     "33": {
       "n": 15,
@@ -85,11 +84,11 @@
     },
     "37": {
       "n": 19,
-      "valid_rate": 0.0
+      "valid_rate": 0.10526315789473684
     },
     "39": {
       "n": 13,
-      "valid_rate": 0.0
+      "valid_rate": 0.07692307692307693
     },
     "41": {
       "n": 18,
@@ -105,7 +104,7 @@
     },
     "47": {
       "n": 27,
-      "valid_rate": 0.0
+      "valid_rate": 0.07407407407407407
     },
     "49": {
       "n": 21,
@@ -129,36 +128,36 @@
     },
     "59": {
       "n": 59,
-      "valid_rate": 0.03389830508474576
+      "valid_rate": 0.01694915254237288
     },
     "61": {
       "n": 95,
-      "valid_rate": 0.0
+      "valid_rate": 0.031578947368421054
     },
     "63": {
       "n": 234,
-      "valid_rate": 0.008547008547008548
+      "valid_rate": 0.038461538461538464
     }
   },
   "by_seed": {
     "1234": {
       "n": 256,
-      "valid_rate": 0.01953125
+      "valid_rate": 0.02734375
     },
     "2025": {
       "n": 256,
-      "valid_rate": 0.0078125
+      "valid_rate": 0.03515625
     },
     "3407": {
       "n": 256,
-      "valid_rate": 0.0
+      "valid_rate": 0.02734375
     }
   },
-  "mean_repair_distance": 29.139322916666668,
-  "mean_vae_nll_per_token": null,
-  "mean_vae_ppl": null,
+  "mean_repair_distance": 4.106770833333333,
+  "mean_vae_nll_per_token": 0.15022053047828385,
+  "mean_vae_ppl": 1.1838990607624473,
   "n": 768,
-  "valid_rate": 0.009114583333333334,
-  "valid_rate_ci95_high": 0.016927083333333332,
-  "valid_rate_ci95_low": 0.0026041666666666665
+  "valid_rate": 0.029947916666666668,
+  "valid_rate_ci95_high": 0.04296875,
+  "valid_rate_ci95_low": 0.018229166666666668
 }
