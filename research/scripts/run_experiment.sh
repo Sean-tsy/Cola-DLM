@@ -62,6 +62,7 @@ for SEED in ${SEEDS}; do
         --config "${CONFIG}" \
         --input-jsonl "${IN}" \
         --output-jsonl "${OUT}" \
+        --batch-size "${INFER_BATCH_SIZE:-20}" \
         --dit-path "${DIT_PATH}" \
         --vae-path "${VAE_PATH}" \
         --tokenizer-path "${TOKENIZER_PATH}" \

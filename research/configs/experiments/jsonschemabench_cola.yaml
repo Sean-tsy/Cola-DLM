@@ -4,9 +4,11 @@ task: structured
 n_samples: 512
 seeds: [1234, 2025, 3407]
 
+# name=Github_easy：default 混档含 Kubernetes/JsonSchemaStore 巨型 schema，
+# 全文入 prompt 会把 VAE prefix attention 撑到 OOM；L1 基线用 easy 档。
 data:
   source: jsonschemabench
-  name: default
+  name: Github_easy
   split: test
 
 sampling:
