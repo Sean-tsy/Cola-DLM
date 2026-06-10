@@ -72,8 +72,35 @@ def jsonschemabench_to_record(row: dict[str, Any], idx: int) -> dict[str, Any]:
     }
 
 
+# BFCL parameter docs use Python-ish type names; map them onto JSON Schema
+# primitives so Draft 2020-12 validation does not hit UnknownType. ``any``
+# maps to None, meaning the ``type`` constraint is dropped.
+_BFCL_TYPE_MAP = {
+    "dict": "object",
+    "tuple": "array",
+    "float": "number",
+    "any": None,
+}
+
+
+def _sanitize_bfcl_schema(node: Any) -> Any:
+    if isinstance(node, list):
+        return [_sanitize_bfcl_schema(item) for item in node]
+    if not isinstance(node, dict):
+        return node
+    out: dict[str, Any] = {}
+    for key, value in node.items():
+        if key == "type" and isinstance(value, str) and value in _BFCL_TYPE_MAP:
+            mapped = _BFCL_TYPE_MAP[value]
+            if mapped is not None:
+                out[key] = mapped
+            continue
+        out[key] = _sanitize_bfcl_schema(value)
+    return out
+
+
 def _schema_from_parameters(params: Any) -> dict[str, Any]:
-    params = _json_value(params)
+    params = _sanitize_bfcl_schema(_json_value(params))
     if isinstance(params, dict) and params.get("type") == "object":
         return params
     if isinstance(params, dict) and "properties" in params:
@@ -104,17 +131,38 @@ def _tools_from_bfcl(row: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return tools
 
 
+def _bfcl_prompt(question: Any) -> str:
+    """Flatten BFCL v3 ``question`` ([[{role, content}, ...]] turns) to text."""
+    if isinstance(question, str):
+        return question
+    if isinstance(question, list):
+        parts: list[str] = []
+        for turn in question:
+            messages = turn if isinstance(turn, list) else [turn]
+            for msg in messages:
+                if isinstance(msg, dict):
+                    if msg.get("role", "user") == "user" and msg.get("content"):
+                        parts.append(str(msg["content"]))
+                elif isinstance(msg, str):
+                    parts.append(msg)
+        return "\n".join(parts)
+    return str(question)
+
+
 def bfcl_to_record(row: dict[str, Any], idx: int) -> dict[str, Any]:
     """Convert one BFCL row into a tool-call formatting prompt."""
     tools = _tools_from_bfcl(row)
-    prompt = str(_first(row, ("prompt", "question", "user_query", "instruction"), ""))
+    prompt = _bfcl_prompt(_first(row, ("prompt", "question", "user_query", "instruction"), ""))
     if tools:
         prompt += "\nAvailable tools:\n" + json.dumps(tools, ensure_ascii=False)
     prompt += '\nReturn exactly one JSON object: {"name": <tool name>, "arguments": {...}}'
+    ground_truth = _first(row, ("ground_truth", "answer", "possible_answer"), "")
+    if not isinstance(ground_truth, str):
+        ground_truth = json.dumps(ground_truth, ensure_ascii=False)
     return {
         "id": _first(row, ("id", "idx", "question_id"), idx),
         "prompt": prompt,
-        "ground_truth": _first(row, ("ground_truth", "answer", "possible_answer"), ""),
+        "ground_truth": ground_truth,
         "meta": {
             "probe": "tool_call",
             "source": "gorilla-llm/Berkeley-Function-Calling-Leaderboard",
@@ -151,3 +199,38 @@ def load_hf_records(
     if limit is not None:
         ds = ds.select(range(min(limit, len(ds))))
     return convert_rows(source, ds)
+
+
+def load_bfcl_records(
+    *,
+    category: str = "simple",
+    limit: int | None = None,
+    repo: str = "gorilla-llm/Berkeley-Function-Calling-Leaderboard",
+) -> list[dict[str, Any]]:
+    """Load one BFCL v3 category and convert rows to inference records.
+
+    The BFCL repo stores raw JSONL files that ``datasets`` cannot auto-load
+    (DataFilesNotFoundError), so this goes through ``hf_hub_download``. The
+    matching ``possible_answer/`` file is joined by id into each row's
+    ``possible_answer`` so the ground truth survives for later semantic
+    scoring; categories without one (e.g. ``rest``) just skip the join.
+    """
+    from huggingface_hub import hf_hub_download
+
+    def _read(path: str) -> list[dict[str, Any]]:
+        with open(path, encoding="utf-8") as fh:
+            return [json.loads(line) for line in fh if line.strip()]
+
+    data_path = hf_hub_download(repo, f"BFCL_v3_{category}.json", repo_type="dataset")
+    rows = _read(data_path)
+    try:
+        answer_path = hf_hub_download(repo, f"possible_answer/BFCL_v3_{category}.json", repo_type="dataset")
+        answers = {row.get("id"): row.get("ground_truth") for row in _read(answer_path)}
+    except Exception:
+        answers = {}
+    for row in rows:
+        if row.get("id") in answers:
+            row["possible_answer"] = answers[row["id"]]
+    if limit is not None:
+        rows = rows[:limit]
+    return convert_rows("bfcl", rows)

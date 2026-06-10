@@ -6,7 +6,7 @@ seeds: [1234, 2025, 3407]
 
 data:
   source: bfcl
-  split: train
+  name: simple
 
 sampling:
   block_size: 16

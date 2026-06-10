@@ -7,7 +7,7 @@ seeds: [1234, 2025, 3407]
 data:
   source: jsonschemabench
   name: default
-  split: train
+  split: test
 
 sampling:
   block_size: 16

@@ -158,13 +158,11 @@ class ExperimentConfig:
             samples = generate_structured(self.n_samples, seed, **self.data)
         else:  # TASK_TOOL_CALL
             if self.data.get("source") == "bfcl":
-                from research.datasets.external import load_hf_records
+                # Raw-JSONL repo: not loadable via `datasets` (see load_bfcl_records).
+                from research.datasets.external import load_bfcl_records
 
-                return load_hf_records(
-                    "gorilla-llm/Berkeley-Function-Calling-Leaderboard",
-                    source="bfcl",
-                    name=self.data.get("name"),
-                    split=self.data.get("split", "train"),
+                return load_bfcl_records(
+                    category=self.data.get("name", "simple"),
                     limit=self.n_samples,
                 )
             from research.data_gen.tool_call import generate_tool_calls
