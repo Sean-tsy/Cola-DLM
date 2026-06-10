@@ -1,0 +1,24 @@
+# env节九 9.4 · ODE step sweep: timestep_num=8。
+run_id: dyck_L64_D8_k1_ode8
+task: dyck
+n_samples: 256
+seeds: [1234, 2025, 3407]
+
+data:
+  length: 64
+  max_depth: 8
+  k: 1
+  mode: completion
+
+sampling:
+  block_size: 16
+  timestep_num: 8
+  guidance_scale: 7.0
+  max_new_tokens: 96
+  temperature: 0.0
+  trace: true
+
+checkpoint:
+  dit: ${DIT_PATH}
+  vae: ${VAE_PATH}
+  tokenizer: ${TOKENIZER_PATH}
