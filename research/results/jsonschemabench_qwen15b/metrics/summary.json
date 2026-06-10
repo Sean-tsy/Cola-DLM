@@ -1,0 +1,24 @@
+{
+  "boundary_error_rate": null,
+  "by_depth": {},
+  "by_error_type": {
+    "parse_error": 500,
+    "schema_error": 5,
+    "valid": 7
+  },
+  "by_length": {},
+  "by_pairing_distance": {},
+  "by_seed": {
+    "1234": {
+      "n": 512,
+      "valid_rate": 0.013671875
+    }
+  },
+  "mean_repair_distance": null,
+  "mean_vae_nll_per_token": null,
+  "mean_vae_ppl": null,
+  "n": 512,
+  "valid_rate": 0.013671875,
+  "valid_rate_ci95_high": 0.025390625,
+  "valid_rate_ci95_low": 0.00390625
+}

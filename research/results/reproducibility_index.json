@@ -30,6 +30,27 @@
       ]
     },
     {
+      "by_error_type": {
+        "parse_error": 400
+      },
+      "config_sha256": "9c4b169a7907d52829d48809b933aacbac3f63f8af2cc48b4e70d5eab326ba4c",
+      "created_at": "2026-06-10T08:39:51.343231+00:00",
+      "git_sha": "14b36e38416eb01fb15b31c10823f4271c88db6f",
+      "metrics": {
+        "boundary_error_rate": null,
+        "mean_repair_distance": null,
+        "mean_vae_ppl": null,
+        "n": 400,
+        "valid_rate": 0.0,
+        "valid_rate_ci95_high": 0.0,
+        "valid_rate_ci95_low": 0.0
+      },
+      "run_id": "bfcl_qwen15b",
+      "seeds": [
+        1234
+      ]
+    },
+    {
       "config_sha256": "fe38a517a303bf36fe677ba4834fc7c479770731b74cd476b677f1e2b94d368b",
       "created_at": null,
       "git_sha": "cc1a0603731f084b8be443a7a0325b03fd97f8be",
@@ -411,6 +432,31 @@
     },
     {
       "by_error_type": {
+        "none": 44,
+        "unclosed": 570,
+        "unexpected_closing": 154
+      },
+      "config_sha256": "83946be1c3507c4028fd367282e5cfe0c26551addb96fd9d2f9847c82a7f1fff",
+      "created_at": "2026-06-10T08:32:40.730779+00:00",
+      "git_sha": "14b36e38416eb01fb15b31c10823f4271c88db6f",
+      "metrics": {
+        "boundary_error_rate": null,
+        "mean_repair_distance": 34.600260416666664,
+        "mean_vae_ppl": null,
+        "n": 768,
+        "valid_rate": 0.057291666666666664,
+        "valid_rate_ci95_high": 0.07291666666666667,
+        "valid_rate_ci95_low": 0.040364583333333336
+      },
+      "run_id": "dyck_L64_D8_k1_qwen15b",
+      "seeds": [
+        1234,
+        2025,
+        3407
+      ]
+    },
+    {
+      "by_error_type": {
         "none": 555,
         "unclosed": 114,
         "unexpected_closing": 99
@@ -522,6 +568,29 @@
         1234,
         2025,
         3407
+      ]
+    },
+    {
+      "by_error_type": {
+        "parse_error": 500,
+        "schema_error": 5,
+        "valid": 7
+      },
+      "config_sha256": "36b7dbc2fe7fb6246d2466bf646a6a8a22bbaeb05e07b798f7115fccfd88b77a",
+      "created_at": "2026-06-10T08:35:28.689819+00:00",
+      "git_sha": "14b36e38416eb01fb15b31c10823f4271c88db6f",
+      "metrics": {
+        "boundary_error_rate": null,
+        "mean_repair_distance": null,
+        "mean_vae_ppl": null,
+        "n": 512,
+        "valid_rate": 0.013671875,
+        "valid_rate_ci95_high": 0.025390625,
+        "valid_rate_ci95_low": 0.00390625
+      },
+      "run_id": "jsonschemabench_qwen15b",
+      "seeds": [
+        1234
       ]
     }
   ]

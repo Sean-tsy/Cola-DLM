@@ -1,0 +1,33 @@
+{
+  "config": {
+    "checkpoint": {
+      "model": "${BASELINE_MODEL_PATH}"
+    },
+    "data": {
+      "name": "Github_easy",
+      "source": "jsonschemabench",
+      "split": "test"
+    },
+    "n_samples": 512,
+    "run_id": "jsonschemabench_qwen15b",
+    "sampling": {
+      "block_size": 16,
+      "guidance_scale": 7.0,
+      "max_new_tokens": 256,
+      "patch_size": null,
+      "repetition_penalty": 1.1,
+      "temperature": 0.0,
+      "timestep_num": 16,
+      "top_k": 50,
+      "top_p": 0.9,
+      "trace": false
+    },
+    "seeds": [
+      1234
+    ],
+    "task": "structured"
+  },
+  "created_at": "2026-06-10T08:35:28.689819+00:00",
+  "git_sha": "14b36e38416eb01fb15b31c10823f4271c88db6f",
+  "run_id": "jsonschemabench_qwen15b"
+}
