@@ -1,0 +1,528 @@
+{
+  "checkpoint_sha256": {
+    "./cola_dlm/cola_dit/model-00001-of-00002.safetensors": "8e4f4f2823d47553db823036cb80c5c5fec3f1a8769f17b4c2904f69b1bfe94e",
+    "./cola_dlm/cola_dit/model-00002-of-00002.safetensors": "fa0ceadba148ab3d13b89ae6c6906db2ece5884784839fb5433dcdb8354f955f",
+    "./cola_dlm/cola_vae/model.safetensors": "2b27cf0a73ecf687d37c28d45881117960979436ed6ec908abd44330b23e991c",
+    "./tokenizer.json": "3ca996cca8afea58b34e95c353e859333592642a5e51d695d7a6dbbaf692dfe9"
+  },
+  "runs": [
+    {
+      "by_error_type": {
+        "parse_error": 1200
+      },
+      "config_sha256": "440b6e740d15f3be0dd7fbccc2e1fe814cf67dcaa6776b6b760f6cbd0bf16528",
+      "created_at": "2026-06-10T07:22:51.309625+00:00",
+      "git_sha": "c24c38b597ac1ab26dd3ab453c8953234817cdcf",
+      "metrics": {
+        "boundary_error_rate": null,
+        "mean_repair_distance": null,
+        "mean_vae_ppl": null,
+        "n": 1200,
+        "valid_rate": 0.0,
+        "valid_rate_ci95_high": 0.0,
+        "valid_rate_ci95_low": 0.0
+      },
+      "run_id": "bfcl_cola",
+      "seeds": [
+        1234,
+        2025,
+        3407
+      ]
+    },
+    {
+      "config_sha256": "fe38a517a303bf36fe677ba4834fc7c479770731b74cd476b677f1e2b94d368b",
+      "created_at": null,
+      "git_sha": "cc1a0603731f084b8be443a7a0325b03fd97f8be",
+      "metrics": {
+        "accuracy": {
+          "lambada": 50.9,
+          "tasks_average": 50.9
+        }
+      },
+      "run_id": "calib_lambada",
+      "seeds": null
+    },
+    {
+      "config_sha256": "3198253c44a039a540a7184854b5b70be2afab43c4ce903ce69c019e0857cd48",
+      "created_at": "2026-06-09T15:48:00+00:00",
+      "git_sha": "6965743b7991db4765b16bc104731f9ac88711e6",
+      "metrics": {
+        "accuracy": {
+          "hellaswag": 11.0,
+          "lambada": 50.9,
+          "mmlu": 19.5,
+          "obqa": 23.0,
+          "race": 20.0,
+          "siqa": 29.2,
+          "squad": 30.3,
+          "story_cloze": 30.77,
+          "tasks_average": 26.83
+        },
+        "calibration_verdict": {
+          "tasks": {
+            "hellaswag": {
+              "abs_delta": 0.3000000000000007,
+              "measured": 11.0,
+              "reference": 10.7,
+              "status": "PASS",
+              "tolerance": 3.0
+            },
+            "lambada": {
+              "abs_delta": 0.10000000000000142,
+              "measured": 50.9,
+              "reference": 50.8,
+              "status": "PASS",
+              "tolerance": 3.0
+            },
+            "mmlu": {
+              "abs_delta": 0.1999999999999993,
+              "measured": 19.5,
+              "reference": 19.3,
+              "status": "PASS",
+              "tolerance": 3.0
+            },
+            "obqa": {
+              "abs_delta": 0.0,
+              "measured": 23.0,
+              "reference": 23.0,
+              "status": "PASS",
+              "tolerance": 3.0
+            },
+            "race": {
+              "abs_delta": 0.3999999999999986,
+              "measured": 20.0,
+              "reference": 19.6,
+              "status": "PASS",
+              "tolerance": 3.0
+            },
+            "siqa": {
+              "abs_delta": 0.3000000000000007,
+              "measured": 29.2,
+              "reference": 28.9,
+              "status": "PASS",
+              "tolerance": 3.0
+            },
+            "squad": {
+              "abs_delta": 0.5999999999999979,
+              "measured": 30.3,
+              "reference": 30.9,
+              "status": "PASS",
+              "tolerance": 3.0
+            },
+            "story_cloze": {
+              "abs_delta": 0.0,
+              "measured": 30.77,
+              "reference": 30.77,
+              "status": "PASS",
+              "tolerance": 3.0
+            },
+            "tasks_average": {
+              "abs_delta": 0.0799999999999983,
+              "measured": 26.83,
+              "reference": 26.75,
+              "status": "PASS",
+              "tolerance": 3.0
+            }
+          },
+          "verdict": "PASS"
+        }
+      },
+      "run_id": "calib_official8",
+      "seeds": null
+    },
+    {
+      "by_error_type": {
+        "mismatched": 3,
+        "none": 4,
+        "unclosed": 78,
+        "unexpected_closing": 43
+      },
+      "config_sha256": "c5f1487576edcd0521b4146989763a2bc92d30d6ffc683d7823bb3a8820947d7",
+      "created_at": "2026-06-09T15:40:12.272344+00:00",
+      "git_sha": "e4e847068384e7f0f2b416e64effa74ee400eaaf",
+      "metrics": {
+        "boundary_error_rate": null,
+        "mean_repair_distance": 10.125,
+        "mean_vae_ppl": null,
+        "n": 128,
+        "valid_rate": 0.03125,
+        "valid_rate_ci95_high": 0.0625,
+        "valid_rate_ci95_low": 0.0078125
+      },
+      "run_id": "dyck1_L32_completion_preview",
+      "seeds": [
+        1234,
+        2025
+      ]
+    },
+    {
+      "by_error_type": {
+        "none": 122,
+        "unclosed": 5,
+        "unexpected_closing": 1
+      },
+      "config_sha256": "58bf8285c6f88db42b52317ce3e9d150c2e6e4255709149640837c65929e9d72",
+      "created_at": "2026-06-09T15:38:36.342555+00:00",
+      "git_sha": "e4e847068384e7f0f2b416e64effa74ee400eaaf",
+      "metrics": {
+        "boundary_error_rate": null,
+        "mean_repair_distance": 0.046875,
+        "mean_vae_ppl": null,
+        "n": 128,
+        "valid_rate": 0.953125,
+        "valid_rate_ci95_high": 0.984375,
+        "valid_rate_ci95_low": 0.9140625
+      },
+      "run_id": "dyck1_L32_preview",
+      "seeds": [
+        1234,
+        2025
+      ]
+    },
+    {
+      "by_error_type": {
+        "none": 128
+      },
+      "config_sha256": "1c0fb68da532b18180027e4ef34e3712627bac628bc40dd0af8474298f0f8f22",
+      "created_at": "2026-06-09T15:51:13.455272+00:00",
+      "git_sha": "a070100a597b9228a5b20ae56a3df1c204b6848e",
+      "metrics": {
+        "boundary_error_rate": null,
+        "mean_repair_distance": 0,
+        "mean_vae_ppl": 1.000172573166987,
+        "n": 128,
+        "valid_rate": 1.0,
+        "valid_rate_ci95_high": 1.0,
+        "valid_rate_ci95_low": 1.0
+      },
+      "run_id": "dyck1_L32_preview_vae",
+      "seeds": [
+        1234,
+        2025
+      ]
+    },
+    {
+      "by_error_type": {
+        "mismatched": 9,
+        "none": 9,
+        "unclosed": 690,
+        "unexpected_closing": 60
+      },
+      "config_sha256": "b193a2dafe290eaa878dc4c1d470200a4b577f0072a199a20012c3308757b4c2",
+      "created_at": "2026-06-10T05:22:23.731565+00:00",
+      "git_sha": "8813e370fa0f45a2eeefdccbef2689355b57b909",
+      "metrics": {
+        "boundary_error_rate": 0.9049479166666666,
+        "mean_repair_distance": 22.03125,
+        "mean_vae_ppl": null,
+        "n": 768,
+        "valid_rate": 0.01171875,
+        "valid_rate_ci95_high": 0.01953125,
+        "valid_rate_ci95_low": 0.005208333333333333
+      },
+      "run_id": "dyck_L64_D8_k1_blk1",
+      "seeds": [
+        1234,
+        2025,
+        3407
+      ]
+    },
+    {
+      "by_error_type": {
+        "mismatched": 3,
+        "none": 7,
+        "unclosed": 625,
+        "unexpected_closing": 133
+      },
+      "config_sha256": "d922ca0c395027307ac9add3dd2fa8832616ea19cdec43c11087c42d26ca1edb",
+      "created_at": "2026-06-10T05:57:40.542049+00:00",
+      "git_sha": "8813e370fa0f45a2eeefdccbef2689355b57b909",
+      "metrics": {
+        "boundary_error_rate": 0.06510416666666667,
+        "mean_repair_distance": 29.139322916666668,
+        "mean_vae_ppl": null,
+        "n": 768,
+        "valid_rate": 0.009114583333333334,
+        "valid_rate_ci95_high": 0.016927083333333332,
+        "valid_rate_ci95_low": 0.0026041666666666665
+      },
+      "run_id": "dyck_L64_D8_k1_blk16",
+      "seeds": [
+        1234,
+        2025,
+        3407
+      ]
+    },
+    {
+      "by_error_type": {
+        "mismatched": 2,
+        "none": 6,
+        "unclosed": 634,
+        "unexpected_closing": 126
+      },
+      "config_sha256": "9f9a12d52f28ed833eb43fa5a8a59e3738af7665e7c133ec7b481b29f9b66ff5",
+      "created_at": "2026-06-10T05:13:06.637489+00:00",
+      "git_sha": "8813e370fa0f45a2eeefdccbef2689355b57b909",
+      "metrics": {
+        "boundary_error_rate": 0.03125,
+        "mean_repair_distance": 21.3671875,
+        "mean_vae_ppl": null,
+        "n": 768,
+        "valid_rate": 0.0078125,
+        "valid_rate_ci95_high": 0.014322916666666666,
+        "valid_rate_ci95_low": 0.0026041666666666665
+      },
+      "run_id": "dyck_L64_D8_k1_blk32",
+      "seeds": [
+        1234,
+        2025,
+        3407
+      ]
+    },
+    {
+      "by_error_type": {
+        "mismatched": 69,
+        "none": 4,
+        "unclosed": 452,
+        "unexpected_closing": 243
+      },
+      "config_sha256": "122d45a156a81a618678d4f8cefac0322f32e4770d586767fc0afc1eb2bc2773",
+      "created_at": "2026-06-10T05:05:22.566280+00:00",
+      "git_sha": "8813e370fa0f45a2eeefdccbef2689355b57b909",
+      "metrics": {
+        "boundary_error_rate": 0.2721354166666667,
+        "mean_repair_distance": 20.587239583333332,
+        "mean_vae_ppl": null,
+        "n": 768,
+        "valid_rate": 0.005208333333333333,
+        "valid_rate_ci95_high": 0.010416666666666666,
+        "valid_rate_ci95_low": 0.0013020833333333333
+      },
+      "run_id": "dyck_L64_D8_k1_blk4",
+      "seeds": [
+        1234,
+        2025,
+        3407
+      ]
+    },
+    {
+      "by_error_type": {
+        "mismatched": 23,
+        "none": 8,
+        "unclosed": 570,
+        "unexpected_closing": 167
+      },
+      "config_sha256": "5e67851918065cb2a7e4b4df2ba13ca2f8479cea468fc3f46b1cf184ea7d1d85",
+      "created_at": "2026-06-10T05:53:47.675383+00:00",
+      "git_sha": "8813e370fa0f45a2eeefdccbef2689355b57b909",
+      "metrics": {
+        "boundary_error_rate": 0.11197916666666667,
+        "mean_repair_distance": 25.962239583333332,
+        "mean_vae_ppl": null,
+        "n": 768,
+        "valid_rate": 0.010416666666666666,
+        "valid_rate_ci95_high": 0.018229166666666668,
+        "valid_rate_ci95_low": 0.00390625
+      },
+      "run_id": "dyck_L64_D8_k1_blk8",
+      "seeds": [
+        1234,
+        2025,
+        3407
+      ]
+    },
+    {
+      "by_error_type": {
+        "mismatched": 17,
+        "none": 5,
+        "unclosed": 614,
+        "unexpected_closing": 132
+      },
+      "config_sha256": "b38dd13e0ef396e14a0064a5486ee1004e093ccf0c3eadbd3c6fc926d05a5d68",
+      "created_at": "2026-06-10T05:59:51.337490+00:00",
+      "git_sha": "8813e370fa0f45a2eeefdccbef2689355b57b909",
+      "metrics": {
+        "boundary_error_rate": 0.061197916666666664,
+        "mean_repair_distance": 30.747395833333332,
+        "mean_vae_ppl": null,
+        "n": 768,
+        "valid_rate": 0.006510416666666667,
+        "valid_rate_ci95_high": 0.013020833333333334,
+        "valid_rate_ci95_low": 0.0013020833333333333
+      },
+      "run_id": "dyck_L64_D8_k1_ode32",
+      "seeds": [
+        1234,
+        2025,
+        3407
+      ]
+    },
+    {
+      "by_error_type": {
+        "mismatched": 23,
+        "none": 6,
+        "unclosed": 619,
+        "unexpected_closing": 120
+      },
+      "config_sha256": "938ea36328a9c89af6432979addef7cb85212578042c43dd49103dce9e11eda0",
+      "created_at": "2026-06-10T05:16:00.248371+00:00",
+      "git_sha": "8813e370fa0f45a2eeefdccbef2689355b57b909",
+      "metrics": {
+        "boundary_error_rate": 0.059895833333333336,
+        "mean_repair_distance": 31.12109375,
+        "mean_vae_ppl": null,
+        "n": 768,
+        "valid_rate": 0.0078125,
+        "valid_rate_ci95_high": 0.014322916666666666,
+        "valid_rate_ci95_low": 0.0026041666666666665
+      },
+      "run_id": "dyck_L64_D8_k1_ode64",
+      "seeds": [
+        1234,
+        2025,
+        3407
+      ]
+    },
+    {
+      "by_error_type": {
+        "mismatched": 5,
+        "none": 4,
+        "unclosed": 641,
+        "unexpected_closing": 118
+      },
+      "config_sha256": "f64d2717ed5dc925720061f1db3c537cc20d156424af23cc00205b2c686d08f6",
+      "created_at": "2026-06-10T05:14:31.335576+00:00",
+      "git_sha": "8813e370fa0f45a2eeefdccbef2689355b57b909",
+      "metrics": {
+        "boundary_error_rate": 0.055989583333333336,
+        "mean_repair_distance": 37.119791666666664,
+        "mean_vae_ppl": null,
+        "n": 768,
+        "valid_rate": 0.005208333333333333,
+        "valid_rate_ci95_high": 0.010416666666666666,
+        "valid_rate_ci95_low": 0.0013020833333333333
+      },
+      "run_id": "dyck_L64_D8_k1_ode8",
+      "seeds": [
+        1234,
+        2025,
+        3407
+      ]
+    },
+    {
+      "by_error_type": {
+        "none": 555,
+        "unclosed": 114,
+        "unexpected_closing": 99
+      },
+      "config_sha256": "9a5741c1a92fd354e4a29c0b442deaf656d0e8c2bf8667169d922f3f17121626",
+      "created_at": "2026-06-10T06:47:52.007897+00:00",
+      "git_sha": "ed5605c3184b5b8d18f7fdb65bba82a7fe053886",
+      "metrics": {
+        "boundary_error_rate": null,
+        "mean_repair_distance": 0.2799479166666667,
+        "mean_vae_ppl": 1.1838990607624473,
+        "n": 768,
+        "valid_rate": 0.72265625,
+        "valid_rate_ci95_high": 0.7552083333333334,
+        "valid_rate_ci95_low": 0.6901041666666666
+      },
+      "run_id": "dyck_L64_D8_k1_vae",
+      "seeds": [
+        1234,
+        2025,
+        3407
+      ]
+    },
+    {
+      "by_error_type": {
+        "mismatched": 693,
+        "unclosed": 14,
+        "unexpected_closing": 61
+      },
+      "config_sha256": "2b7e564709268ed96084df03c958e05fe82e4fb7bc7627ddb49d8d1722037a18",
+      "created_at": "2026-06-09T15:58:03.677988+00:00",
+      "git_sha": "b01aedf19940e18d6021810ac00503034d879cfe",
+      "metrics": {
+        "boundary_error_rate": null,
+        "mean_repair_distance": 29.154947916666668,
+        "mean_vae_ppl": null,
+        "n": 768,
+        "valid_rate": 0.0,
+        "valid_rate_ci95_high": 0.0,
+        "valid_rate_ci95_low": 0.0
+      },
+      "run_id": "dycklanguage_cola",
+      "seeds": [
+        1234,
+        2025,
+        3407
+      ]
+    },
+    {
+      "by_error_type": {
+        "parse_error": 16
+      },
+      "config_sha256": "8fdf01e2bdd2d6c75fcec4eb49da54e7f8c7dbf221c86a8e7aa63f527439481b",
+      "created_at": "2026-06-09T15:41:58.692491+00:00",
+      "git_sha": "e4e847068384e7f0f2b416e64effa74ee400eaaf",
+      "metrics": {
+        "boundary_error_rate": null,
+        "mean_repair_distance": null,
+        "mean_vae_ppl": null,
+        "n": 16,
+        "valid_rate": 0.0,
+        "valid_rate_ci95_high": 0.0,
+        "valid_rate_ci95_low": 0.0
+      },
+      "run_id": "json_smoke",
+      "seeds": [
+        1234
+      ]
+    },
+    {
+      "by_error_type": {
+        "valid": 16
+      },
+      "config_sha256": "2475f49b81143d276644f83f017fb3519945ac142b774b12667e870376458658",
+      "created_at": "2026-06-09T15:51:27.037361+00:00",
+      "git_sha": "a070100a597b9228a5b20ae56a3df1c204b6848e",
+      "metrics": {
+        "boundary_error_rate": null,
+        "mean_repair_distance": null,
+        "mean_vae_ppl": 1.020903891358501,
+        "n": 16,
+        "valid_rate": 1.0,
+        "valid_rate_ci95_high": 1.0,
+        "valid_rate_ci95_low": 1.0
+      },
+      "run_id": "json_smoke_vae",
+      "seeds": [
+        1234
+      ]
+    },
+    {
+      "by_error_type": {
+        "parse_error": 1536
+      },
+      "config_sha256": "d622d2bc3da51672cc53cb20e6d8b74ee1b6be8224d50ad283f34baa7877836f",
+      "created_at": "2026-06-10T07:21:21.336684+00:00",
+      "git_sha": "c24c38b597ac1ab26dd3ab453c8953234817cdcf",
+      "metrics": {
+        "boundary_error_rate": null,
+        "mean_repair_distance": null,
+        "mean_vae_ppl": null,
+        "n": 1536,
+        "valid_rate": 0.0,
+        "valid_rate_ci95_high": 0.0,
+        "valid_rate_ci95_low": 0.0
+      },
+      "run_id": "jsonschemabench_cola",
+      "seeds": [
+        1234,
+        2025,
+        3407
+      ]
+    }
+  ]
+}
