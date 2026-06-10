@@ -309,6 +309,100 @@ def generate_task_repaint_inference(
     assistant_token_id: Optional[int] = None,
     newline_token_id: Optional[int] = None,
 ) -> list[dict]:
+    """Public entry: algorithm docs live on :func:`_generate_task_repaint_inference_impl`.
+
+    Adds the default-off diagnostics instrumentation of
+    ``research/docs/change_map.md`` (Phase-4 patch plan): when the
+    ``COLA_DIAG_TRACE`` env var is unset this is a plain passthrough and the
+    output is byte-identical to upstream; when set, a
+    ``research.instrument.TracingProbe`` records block/ODE/decode events to
+    ``COLA_DIAG_TRACE_PATH`` (probe kind from ``COLA_DIAG_PROBE_KIND``,
+    falling back to ``task_name``). Probe registration is exception-safe.
+    """
+    _kwargs = dict(
+        dit=dit,
+        vae=vae,
+        tokenizer=tokenizer,
+        prompts=prompts,
+        task_name=task_name,
+        device=device,
+        T=T,
+        timestep_num=timestep_num,
+        guidance_scale=guidance_scale,
+        max_new_tokens=max_new_tokens,
+        temperature=temperature,
+        top_k=top_k,
+        top_p=top_p,
+        repetition_penalty=repetition_penalty,
+        pad_token_id=pad_token_id,
+        eos_token_id=eos_token_id,
+        im_end_token_id=im_end_token_id,
+        is_sft=is_sft,
+        im_start_token_id=im_start_token_id,
+        user_token_id=user_token_id,
+        assistant_token_id=assistant_token_id,
+        newline_token_id=newline_token_id,
+    )
+
+    # --- diagnostics (default-off): only active when COLA_DIAG_TRACE is set ---
+    if not os.environ.get("COLA_DIAG_TRACE", "").strip():
+        return _generate_task_repaint_inference_impl(**_kwargs)
+
+    from research.instrument import JsonlTraceWriter, TracingProbe, clear_probe, set_probe
+
+    _trace_path = os.environ.get("COLA_DIAG_TRACE_PATH", "diag_trace.jsonl")
+    _probe_kind = os.environ.get("COLA_DIAG_PROBE_KIND", "").strip() or task_name
+    _diag_writer = JsonlTraceWriter(_trace_path)
+    _diag_probe = TracingProbe(_diag_writer, probe_kind=_probe_kind)
+    set_probe(_diag_probe)
+    _diag_probe.on_request_start(
+        {
+            "task_name": task_name,
+            "block_size": dit.block_size,
+            "patch_size": vae.patch_size,
+            "timestep_num": timestep_num,
+            "n_samples": len(prompts),
+        }
+    )
+    try:
+        results = _generate_task_repaint_inference_impl(**_kwargs, _diag_probe=_diag_probe)
+        _diag_probe.on_request_finish(results)
+        return results
+    finally:
+        # Global registry: clean up on the exception path too, so a failed
+        # request never leaks its probe into the next one.
+        _diag_writer.close()
+        clear_probe()
+
+
+def _generate_task_repaint_inference_impl(
+    dit: ColaDiTModel,
+    vae: ColaTextVAEModel,
+    tokenizer: Tokenizer,
+    prompts: list[dict],
+    task_name: str = "lambada",
+    device: torch.device = torch.device("cuda"),
+    # Diffusion params
+    T: float = 1000.0,
+    timestep_num: int = 16,
+    guidance_scale: float = 7.0,
+    # Generation params
+    max_new_tokens: int = 32,
+    temperature: float = 0.0,
+    top_k: int = 50,
+    top_p: float = 0.9,
+    repetition_penalty: float = 1.1,
+    # Special token IDs (adjust to your tokenizer)
+    pad_token_id: int = 100277,
+    eos_token_id: Optional[int] = None,
+    im_end_token_id: Optional[int] = None,
+    is_sft: bool = False,
+    im_start_token_id: Optional[int] = None,
+    user_token_id: Optional[int] = None,
+    assistant_token_id: Optional[int] = None,
+    newline_token_id: Optional[int] = None,
+    _diag_probe=None,
+) -> list[dict]:
     """End-to-end Cola DLM inference (Eq. 2.2.4–2.2.6 of the paper).
 
     Realizes the three-step inference algorithm of *Continuous Latent
@@ -573,6 +667,9 @@ def generate_task_repaint_inference(
         # sample's K length.
         txt_shape_cum = txt_shape_cum + block_size
 
+        if _diag_probe is not None:
+            _diag_probe.on_block_start(int(step), txt_shape_cum.detach().cpu().tolist())
+
         latent_dim = first_block_latents_flatten.shape[-1]
 
         # --- Initial noise for this block ----------------------------------
@@ -605,7 +702,7 @@ def generate_task_repaint_inference(
         else:
             txt = torch.randn(batch_size * block_size, latent_dim, device=device)
 
-        for t_curr, t_next in zip(timesteps[:-1], timesteps[1:]):
+        for _ode_index, (t_curr, t_next) in enumerate(zip(timesteps[:-1], timesteps[1:])):
             ts_batch = torch.full((txt.shape[0],), t_curr, device=device)
             dt = _diffusion_dt(t_curr, t_next)
 
@@ -653,6 +750,18 @@ def generate_task_repaint_inference(
 
             txt = txt_next
 
+            if _diag_probe is not None:
+                # NOTE: .item() forces a device sync per ODE step; do not use
+                # traced runs for end-to-end latency measurements.
+                _diag_probe.on_ode_step(
+                    int(step),
+                    int(_ode_index),
+                    float(t_curr),
+                    float(t_next),
+                    drift_norm=float(drift.float().norm().item()),
+                    txt_norm=float(txt.float().norm().item()),
+                )
+
         # ------------ decode one block via VAE (NA) ----------------
         with torch.autocast("cuda", dtype=torch.bfloat16):
             decoded = vae.decode(
@@ -673,6 +782,17 @@ def generate_task_repaint_inference(
             top_p=top_p,
             repetition_penalty=repetition_penalty,
         )
+
+        if _diag_probe is not None:
+            _ids = one_block_ids.detach().cpu().tolist()
+            if step == 0:
+                # Trim the first block's prompt-overlap tokens so the text
+                # stream fed to the locator aligns with the final `generate`
+                # (Step 6 trims the same count off the front).
+                _trim = first_block_prompt_token_counts.detach().cpu().tolist()
+                _ids = [row[int(t) :] for row, t in zip(_ids, _trim)]
+            _block_texts = tokenizer.decode_batch(_ids, skip_special_tokens=False)
+            _diag_probe.on_block_decoded(int(step), list(_block_texts))
 
         if context_ids is None:
             context_ids = one_block_ids

@@ -33,7 +33,14 @@ python -m research.scripts.gen_data "${CONFIG}" --results-root "${RESULTS_ROOT}"
 
 RUN_ID="$(python -c "from research.experiment import load_experiment; print(load_experiment('${CONFIG}').run_id)")"
 SEEDS="$(python -c "from research.experiment import load_experiment; print(' '.join(map(str, load_experiment('${CONFIG}').seeds)))")"
+TASK="$(python -c "from research.experiment import load_experiment; print(load_experiment('${CONFIG}').task)")"
 BASE="${RESULTS_ROOT}/${RUN_ID}"
+
+# Locator probe kind for the TracingProbe (config task -> validator name).
+case "${TASK}" in
+  structured) PROBE_KIND="json" ;;
+  *) PROBE_KIND="${TASK}" ;;
+esac
 
 # 2) For each seed: sample with the model (data-parallel across NUM_GPUS) and
 #    capture diagnostics traces. block_size/patch_size overrides + prompt->question
@@ -49,6 +56,7 @@ for SEED in ${SEEDS}; do
     CUDA_VISIBLE_DEVICES="${r}" \
     COLA_INFER_PER_SAMPLE_NOISE_SEED="${SEED}" \
     COLA_DIAG_TRACE=1 \
+    COLA_DIAG_PROBE_KIND="${PROBE_KIND}" \
     COLA_DIAG_TRACE_PATH="${BASE}/traces/seed${SEED}_rank${r}.jsonl" \
       python -m research.scripts.infer_cola \
         --config "${CONFIG}" \

@@ -157,6 +157,9 @@ class TracingProbe(SamplingProbe):
                 {
                     "event": "mismatch",
                     "sample_index": sample_idx,
+                    # Stable join key for eval: batch order is not input-file
+                    # order under rank-strided data-parallel sharding.
+                    "sample_id": (results[sample_idx].get("id") if sample_idx < len(results) else None),
                     "valid": loc.valid,
                     "error_position": loc.error_position,
                     "block_index": loc.block_index,

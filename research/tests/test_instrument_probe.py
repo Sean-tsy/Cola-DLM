@@ -71,7 +71,7 @@ def test_tracing_probe_full_flow(tmp_path: Path) -> None:
         # Two samples; sample 0 stays valid, sample 1 breaks at the block-1 seam.
         probe.on_block_decoded(0, ["()", "(("])
         probe.on_block_decoded(1, ["[]", "])"])
-        probe.on_request_finish([{"id": 0}, {"id": 1}])
+        probe.on_request_finish([{"id": "s0"}, {"id": "s7"}])
 
     records = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
     events = [r["event"] for r in records]
@@ -79,11 +79,37 @@ def test_tracing_probe_full_flow(tmp_path: Path) -> None:
     assert events.count("block_decoded") == 2
 
     mismatches = {r["sample_index"]: r for r in records if r["event"] == "mismatch"}
+    # Mismatch events carry the result's id so eval can join across rank shards.
+    assert mismatches[0]["sample_id"] == "s0"
+    assert mismatches[1]["sample_id"] == "s7"
     assert mismatches[0]["valid"] is True
     assert mismatches[1]["valid"] is False
     # sample 1 text = "((" + "])" -> ']' at the block-1 seam breaks the sequence.
     assert mismatches[1]["block_index"] == 1
     assert mismatches[1]["on_boundary"] is True
+
+
+def test_read_trace_locations_keys_by_sample_id(tmp_path: Path) -> None:
+    """Eval joins traces by sample id: rank-strided batch order != input order."""
+    from research.scripts.eval_experiment import _read_trace_locations
+
+    trace_dir = tmp_path / "traces"
+    trace_dir.mkdir()
+    rows = [
+        {"event": "request_start", "block_size": 2},
+        {"event": "mismatch", "sample_index": 0, "sample_id": "s7", "valid": False},
+        {"event": "mismatch", "sample_index": 1, "sample_id": "s0", "valid": True},
+        {"event": "mismatch", "sample_index": 2, "valid": True},  # no id -> skipped
+    ]
+    (trace_dir / "seed1234_rank0.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
+    (trace_dir / "seed99_rank0.jsonl").write_text(
+        json.dumps({"event": "mismatch", "sample_index": 0, "sample_id": "other-seed"}) + "\n",
+        encoding="utf-8",
+    )
+
+    locations = _read_trace_locations(str(tmp_path), 1234)
+    assert set(locations) == {"s7", "s0"}
+    assert locations["s7"]["sample_index"] == 0
 
 
 def test_tracing_probe_handles_no_decoded_blocks(tmp_path: Path) -> None:

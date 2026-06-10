@@ -22,8 +22,9 @@ def _index_by_id(rows: list[dict[str, Any]]) -> dict[Any, dict[str, Any]]:
     return {row.get("id"): row for row in rows}
 
 
-def _read_trace_locations(base: str, seed: int) -> dict[int, dict[str, Any]]:
-    locations: dict[int, dict[str, Any]] = {}
+def _read_trace_locations(base: str, seed: int) -> dict[Any, dict[str, Any]]:
+    """Mismatch trace events keyed by sample id (rank order != input order)."""
+    locations: dict[Any, dict[str, Any]] = {}
     trace_dir = os.path.join(base, "traces")
     if not os.path.isdir(trace_dir):
         return locations
@@ -31,8 +32,8 @@ def _read_trace_locations(base: str, seed: int) -> dict[int, dict[str, Any]]:
         if not (name.startswith(f"seed{seed}_") and name.endswith(".jsonl")):
             continue
         for row in read_jsonl(os.path.join(trace_dir, name)):
-            if row.get("event") == "mismatch" and "sample_index" in row:
-                locations[len(locations)] = row
+            if row.get("event") == "mismatch" and row.get("sample_id") is not None:
+                locations[row["sample_id"]] = row
     return locations
 
 
@@ -46,7 +47,7 @@ def evaluate_archive(config_path: str, results_root: str) -> tuple[list[EvalReco
         samples = read_jsonl(archive.path("samples", f"seed{seed}.jsonl"))
         by_id = _index_by_id(samples)
         traces = _read_trace_locations(archive.base, seed)
-        for idx, input_record in enumerate(inputs):
+        for input_record in inputs:
             sample = by_id.get(input_record.get("id"))
             if sample is None:
                 sample = {}
@@ -56,7 +57,7 @@ def evaluate_archive(config_path: str, results_root: str) -> tuple[list[EvalReco
                     sample,
                     task=cfg.task,
                     seed=seed,
-                    trace_location=traces.get(idx),
+                    trace_location=traces.get(input_record.get("id")),
                 )
             )
 
