@@ -1,0 +1,21 @@
+# env节九 对比基线 · Qwen2.5-1.5B base 在 BFCL v3 simple。
+# 单 seed：AR greedy 确定性，外部数据不随 seed 变化。
+run_id: bfcl_qwen15b
+task: tool_call
+n_samples: 512
+seeds: [1234]
+
+data:
+  source: bfcl
+  name: simple
+
+sampling:
+  block_size: 16
+  timestep_num: 16
+  guidance_scale: 7.0
+  max_new_tokens: 256
+  temperature: 0.0
+  trace: false
+
+checkpoint:
+  model: ${BASELINE_MODEL_PATH}

@@ -1,0 +1,22 @@
+# env节九 对比基线 · 同量级 AR LM（Qwen2.5-1.5B base）在 9.4 主网格数据上。
+run_id: dyck_L64_D8_k1_qwen15b
+task: dyck
+n_samples: 256
+seeds: [1234, 2025, 3407]
+
+data:
+  length: 64
+  max_depth: 8
+  k: 1
+  mode: completion
+
+sampling:
+  block_size: 16
+  timestep_num: 16
+  guidance_scale: 7.0
+  max_new_tokens: 96
+  temperature: 0.0
+  trace: false
+
+checkpoint:
+  model: ${BASELINE_MODEL_PATH}

@@ -1,0 +1,22 @@
+# env节九 对比基线 · Qwen2.5-1.5B base 在 JSONSchemaBench Github_easy/test。
+# 单 seed：AR greedy 确定性，外部数据不随 seed 变化。
+run_id: jsonschemabench_qwen15b
+task: structured
+n_samples: 512
+seeds: [1234]
+
+data:
+  source: jsonschemabench
+  name: Github_easy
+  split: test
+
+sampling:
+  block_size: 16
+  timestep_num: 16
+  guidance_scale: 7.0
+  max_new_tokens: 256
+  temperature: 0.0
+  trace: false
+
+checkpoint:
+  model: ${BASELINE_MODEL_PATH}
