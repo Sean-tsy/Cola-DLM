@@ -96,8 +96,15 @@ def main(argv: list[str] | None = None) -> int:
                 nll = torch.nn.functional.cross_entropy(sample_logits.float(), target_tensor, reduction="mean").item()
             else:
                 nll = 0.0
+            recon = tokenizer.decode(token_ids)
+            # Match the model-inference `generate` convention (prompt excluded):
+            # eval's completion path re-prepends the true prefix, so emitting the
+            # full reconstruction here would double it and always fail validation.
+            meta = rec.get("meta") or {}
+            prefix = meta.get("prefix", "") if meta.get("mode") == "completion" else ""
             out = dict(rec)
-            out["generate"] = tokenizer.decode(token_ids)
+            out["generate"] = recon[len(prefix) :] if prefix else recon
+            out["recon_full"] = recon
             out["ground_truth"] = target
             out["model_family"] = "cola_vae_only"
             out["vae_nll_per_token"] = nll
